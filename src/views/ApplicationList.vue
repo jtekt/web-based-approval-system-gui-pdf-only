@@ -3,7 +3,10 @@
     <v-card-title>Applications</v-card-title>
 
     <v-card-text>
-      <v-data-table></v-data-table>
+      <v-data-table
+        :items="applications"
+        :headers="headers">
+      </v-data-table>
     </v-card-text>
 
 
@@ -14,8 +17,37 @@
 
   export default {
     name: 'ApplicationList',
+    data(){
+      return {
+        applications: [],
+        headers: [
+          {text: 'ID', value: 'identity'},
+          {text: 'Title', value: 'properties.title'},
+        ]
+      }
+    },
 
     components: {
     },
+    mounted(){
+      this.get_applications()
+    },
+    methods: {
+      get_applications(){
+        const direction = 'submitted'
+        const state = 'pending'
+        const url = `${process.env.VUE_APP_SHINSEI_MANAGER_URL}/v2/applications/${direction}/${state}`
+        this.axios.get(url, {
+          params: {}
+        })
+        .then( ({data}) => {
+          this.applications = data
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+      }
+
+    }
   }
 </script>

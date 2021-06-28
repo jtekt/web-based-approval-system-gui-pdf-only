@@ -268,24 +268,6 @@ export default {
   cursor: pointer;
 }
 
-.pdf_actions_wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-}
-
-.pdf_actions_wrapper > * {
-  margin: 1em;
-}
-
-.disabled {
-  color: #aaaaaa;
-}
-
-.clickable {
-  cursor: pointer;
-}
 
 .loader_wrapper {
   text-align: center;
