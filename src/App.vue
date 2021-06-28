@@ -1,32 +1,60 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
-  </div>
+  <AppTemplate
+    :options="options"
+    @user="$store.commit('set_current_user', $event)">
+
+    <template v-slot:nav>
+      <v-list
+        dense
+        nav >
+        <v-list-item
+          v-for="(item, index) in nav"
+          :key="`nav_item_${index}`"
+          :to="item.to"
+          exact>
+          <v-list-item-icon>
+            <v-icon>{{item.icon}}</v-icon>
+          </v-list-item-icon>
+
+          <v-list-item-content>
+            <v-list-item-title>{{item.title}}</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+    </template>
+
+  </AppTemplate>
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script>
+import AppTemplate from '@moreillon/vue_application_template_vuetify'
+export default {
+  name: 'App',
 
-#nav {
-  padding: 30px;
-}
+  components: {
+    AppTemplate
+  },
 
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
+  data: () => ({
+    options: {
+      title: "申請マネージャー（PDF専用GUI）",
+      authenticate: true,
+      skip_greetings: true,
+      login_url: `${process.env.VUE_APP_AUTHENTICATION_API_URL}/login`,
+      identification_url: `${process.env.VUE_APP_AUTHENTICATION_API_URL}/v2/whoami`,
+    },
+    nav: [
+      {title: '新規作成 / New', to: {name: 'new_application'}, icon: 'mdi-plus'},
+      {title: 'Outbox', to: {name: 'application_list'}, icon: 'mdi-inbox-arrow-up'},
+      {title: 'Inbox', to: {name: 'application_list'}, icon: 'mdi-inbox-arrow-down'},
+      {title: 'About', to: {name: 'about'}, icon: 'mdi-information-outline'},
+    ]
+  }),
 
-#nav a.router-link-exact-active {
-  color: #42b983;
-}
-</style>
+  methods: {
+    get_user(user){
+      console.log(user)
+    }
+  }
+};
+</script>
