@@ -64,7 +64,9 @@
       </v-card-text>
 
       <v-card-text>
-        <PdfViewer :application="application"/>
+        <PdfViewer
+          :application="application"
+          @pdf_stamped="get_application()"/>
       </v-card-text>
 
 
@@ -97,6 +99,7 @@
     },
     methods: {
       get_application(){
+        this.application = null
         const url = `${process.env.VUE_APP_SHINSEI_MANAGER_URL}/v2/applications/${this.application_id}`
         this.axios.get(url)
         .then(({data}) => {
@@ -106,7 +109,6 @@
         .catch((error) => {
           if(error.response) console.error(error.response.data)
           else console.error(error)
-
         })
       }
     },

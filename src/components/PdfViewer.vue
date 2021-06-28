@@ -195,7 +195,7 @@ export default {
 
       this.axios.post(url, {attachment_hankos})
       .then(() => {
-
+        this.$emit('pdf_stamped')
       })
       .catch((error) => {
         console.error(error)
