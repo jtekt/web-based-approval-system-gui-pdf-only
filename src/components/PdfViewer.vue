@@ -68,6 +68,10 @@
 import { PDFDocument } from 'pdf-lib'
 import pdf from 'vue-pdf'
 
+// used to turn Hankos into PNG so as to include them in the pdf
+import canvg from 'canvg'
+
+
 export default {
   name: 'PdfViewer',
   components: {
@@ -153,7 +157,8 @@ export default {
       this.load_error = null
       try {
         this.pdfDoc = await PDFDocument.load(buffer)
-        this.shown_pdf = await this.pdfDoc.save()
+        //this.shown_pdf = await this.pdfDoc.save()
+        this.load_pdf_hankos()
       } catch (e) {
         this.load_error = `この機能は.pdfのファイルしかつかえません<br>This feature only supports .pdf files`
       }
@@ -222,6 +227,124 @@ export default {
       this.new_hanko.style = { visibility: 'none' }
     },
 
+    svg_to_png_url (svg) {
+      return new Promise( (resolve) => {
+
+        const serializer = new XMLSerializer()
+        const SVG_sata = serializer.serializeToString(svg)
+
+        const canvas = document.createElement('canvas')
+        canvas.width = 1000
+        canvas.height = 1500
+
+        const ctx = canvas.getContext('2d');
+
+
+
+        let v = canvg.fromString(ctx, SVG_sata);
+        v.start();
+
+        const png_URL = canvas
+          .toDataURL('image/png')
+          .replace('image/png', 'image/octet-stream')
+
+        resolve(png_URL)
+
+      })
+    },
+
+    get_hanko_blob_url_from_id(hanko_dom_id){
+      const hanko_svg = document.getElementById(hanko_dom_id)
+
+      const serializer = new XMLSerializer()
+      const SVG_sata = serializer.serializeToString(hanko_svg)
+
+      const canvas = document.createElement("canvas");
+      const context = canvas.getContext("2d");
+
+      canvas.width = 1000
+      canvas.height = 1500
+
+      canvg.fromString(context, SVG_sata).start()
+
+      return canvas.toDataURL("image/png");
+    },
+
+    load_pdf_hankos () {
+
+      const approval_promises = []
+
+      this.application.recipients
+      .filter(recipient => !!recipient.approval)
+      .map(recipient => recipient.approval)
+      .forEach(approval => {
+
+        const promise = new Promise( (resolve, reject) => {
+
+          if (!approval.properties.attachment_hankos) return
+
+          if (typeof approval.properties.attachment_hankos === 'string') {
+            approval.properties.attachment_hankos = JSON.parse(approval.properties.attachment_hankos)
+          }
+
+          const png_url = this.get_hanko_blob_url_from_id(`hanko_${approval.identity}`)
+
+          const axios_options = { responseType: 'arraybuffer' }
+
+          this.axios.get(png_url, axios_options)
+          .then( ({data}) => this.pdfDoc.embedPng(data) )
+          .then( (pngImage) => {
+            // The PNG is now awvailable to display at every hanko location
+
+            const pages = this.pdfDoc.getPages()
+
+            approval.properties.attachment_hankos.forEach( hanko => {
+
+              // Skip if hanko is not part of the current file
+              if (hanko.file_id !== this.file_id) return
+
+              const page = pages[hanko.page_number]
+
+              // Currently, some hankos have no scale set so allow the scale to be modified using the slider in that case
+              const pngDims = pngImage.scale(hanko.scale || this.hanko_scale)
+
+              const drawing_parameters = {
+                x: hanko.position.x - 0.5 * pngDims.width,
+                y: hanko.position.y - 0.5 * pngDims.height,
+                width: pngDims.width,
+                height: pngDims.height
+              }
+
+              // This seems to be a synchronous function
+              page.drawImage(pngImage, drawing_parameters)
+
+
+            })
+
+            resolve()
+
+          })
+          .catch(reject)
+        })
+
+        approval_promises.push(promise)
+      })
+
+      // render .pdf once all hankos of all approvals have been drawn
+      Promise.all(approval_promises)
+      .then(async () => {
+        this.shown_pdf = await this.pdfDoc.save()
+      })
+      .catch(error => {
+        console.error(error)
+      })
+
+
+
+
+
+    },
+
   },
   computed: {
     file_id(){
@@ -237,6 +360,7 @@ export default {
       return recipients.find(recipient => !recipient.approval && !recipient.refusal)
     },
     current_recipient_is_current_user(){
+      if(!this.current_recipient) return false
       return this.current_recipient.identity === this.$store.state.current_user.identity
     }
 

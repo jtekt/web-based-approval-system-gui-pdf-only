@@ -5,7 +5,8 @@
     <v-card-text>
       <v-data-table
         :items="applications"
-        :headers="headers">
+        :headers="headers"
+        @click:row="row_clicked($event)">
       </v-data-table>
     </v-card-text>
 
@@ -46,6 +47,9 @@
         .catch((error) => {
           console.error(error)
         })
+      },
+      row_clicked(application){
+        this.$router.push({name: 'application', params: {application_id: application.identity}})
       }
 
     }

@@ -49,9 +49,8 @@
               <v-col
                 v-for="recipient in application.recipients"
                 :key="recipient.identity">
-                <v-card>
-                  {{recipient.properties.display_name}}
-                </v-card>
+                <WebHankoContainer
+                  :recipient="recipient"/>
               </v-col>
             </v-row>
 
@@ -75,12 +74,17 @@
 </template>
 
 <script>
+
+  import WebHankoContainer from '@/components/web_hanko/WebHankoContainer.vue'
+
+
   import PdfViewer from '@/components/PdfViewer.vue'
 
   export default {
     name: 'Application',
 
     components: {
+      WebHankoContainer,
       PdfViewer,
     },
     data(){
