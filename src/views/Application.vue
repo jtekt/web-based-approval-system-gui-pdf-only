@@ -43,16 +43,24 @@
                 </v-list-item-content>
               </v-list-item>
           </v-col>
+
           <!-- Approval flow -->
           <v-col>
-            <v-row>
-              <v-col
-                v-for="recipient in application.recipients"
-                :key="recipient.identity">
+            <div class="approval_flow" >
+              <template
+                v-for="(recipient, index) in ordered_recipients" >
+
+                <div
+                  v-if="index>0"
+                  :key="`flow_arrow_${index}`">
+                  <v-icon class="mt-5">mdi-arrow-left</v-icon>
+                </div>
+
                 <WebHankoContainer
+                  :key="`recipient_${index}`"
                   :recipient="recipient"/>
-              </v-col>
-            </v-row>
+              </template>
+            </div>
 
 
 
@@ -116,12 +124,28 @@
       application_id(){
         return this.$route.params.application_id
       },
+      ordered_recipients(){
+        return this.application.recipients
+          .slice()
+          .sort((a, b) => b.submission.properties.flow_index - a.submission.properties.flow_index)
+      },
       current_recipient(){
         // recipients sorted by flow index apparently
-        const recipients = this.application.recipients
-        return recipients.find(recipient => !recipient.approval && !recipient.refusal)
-      }
+        return this.ordered_recipients.find(recipient => !recipient.approval && !recipient.refusal)
+      },
+
 
     }
   }
 </script>
+
+<style>
+.approval_flow {
+  /* horizontal layout */
+  display: flex;
+  justify-content: flex-end;
+  /* because wrap reverse */
+  align-items: flex-end;
+  flex-wrap: wrap-reverse;
+}
+</style>

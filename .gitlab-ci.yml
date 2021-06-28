@@ -1,0 +1,37 @@
+stages:
+  - containerization
+  - deployment
+
+variables:
+  APPLICATION_NAME: pdf-approval-manager
+  DOCKER_IMAGE: ${DOCKER_HUB_USERNAME}/${APPLICATION_NAME}
+  NODEPORT: 32724
+
+
+containerization:
+  stage: containerization
+  tags:
+    - moreillon
+  script:
+    # Docker hub login
+    - echo "${DOCKER_HUB_PASSWORD}" | docker login --username ${DOCKER_HUB_USERNAME} --password-stdin
+    # Buikd and push container image
+    - docker build -t ${DOCKER_IMAGE} .
+    - docker push ${DOCKER_IMAGE}
+    # Cleanup
+    - docker image rm ${DOCKER_IMAGE}
+
+deployment:
+  stage: deployment
+  tags:
+    - moreillon
+  script:
+    # create/update the deployment
+    - envsubst < kubernetes_manifest.yml | kubectl apply -f -
+    # Pull latest image of deployment
+    - kubectl rollout restart deployment/${APPLICATION_NAME}
+
+  environment:
+    name: production
+    kubernetes:
+      namespace: ${KUBERNETES_NAMESPACE} # Obtained from GitLab
