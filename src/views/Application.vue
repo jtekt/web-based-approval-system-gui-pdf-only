@@ -85,6 +85,12 @@
               </template>
             </div>
 
+            <ApprovalComments
+              :application="application"
+              @comment_updated="get_application()"/>
+
+
+
           </v-col>
         </v-row>
 
@@ -93,7 +99,7 @@
       <v-card-text>
         <PdfViewer
           :application="application"
-          @pdf_stamped="application_approved_callback()"/>
+          @pdf_stamped="get_application()"/>
       </v-card-text>
 
 
@@ -108,6 +114,7 @@
 
 
   import PdfViewer from '@/components/PdfViewer.vue'
+  import ApprovalComments from '@/components/ApprovalComments.vue'
 
   export default {
     name: 'Application',
@@ -115,6 +122,7 @@
     components: {
       WebHankoContainer,
       PdfViewer,
+      ApprovalComments,
     },
     data(){
       return {
@@ -162,17 +170,15 @@
           else console.error(error)
         })
       },
-      application_approved_callback(){
-        this.get_application()
-      },
       format_date_neo4j(date){
         return `${date.year}/${date.month}/${date.day}`
       },
+
       send_email_to_recipient (recipient) {
         // Weird formatting because preserves indentation
         window.location.href = `
   mailto:${recipient.properties.email_address}
-  ?subject=${this.email_subject}
+  ?subject=[申請マネージャ] ${this.application.properties.typ}
   &body=${recipient.properties.display_name} 様 %0D%0A
   %0D%0A
   申請マネージャーの通知メールです。 %0D%0A
@@ -205,7 +211,7 @@
         if(this.application.recipients.find(recipient => recipient.refusal)) return null
         return this.application.recipients
         .slice()
-        .sort((a, b) => a.submission.properties.flow_index - b.submission.properties.flow_index)
+        .sort((a, b) => b.submission.properties.flow_index - a.submission.properties.flow_index)
         .find(recipient => !recipient.approval && !recipient.refusal)
       },
 
@@ -222,5 +228,9 @@
   /* because wrap reverse */
   align-items: flex-end;
   flex-wrap: wrap-reverse;
+}
+
+.comments{
+  margin-top: 3em;
 }
 </style>
