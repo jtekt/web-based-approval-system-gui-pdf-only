@@ -1,8 +1,5 @@
 <template>
   <v-card>
-    <v-toolbar-title v-if="!application">
-      Aplication
-    </v-toolbar-title>
     <template v-if="application">
 
       <v-toolbar
@@ -27,11 +24,9 @@
           <v-icon>mdi-restore</v-icon>
         </v-btn>
 
-        <!-- <v-btn icon>
-          <v-icon>mdi-close</v-icon>
-        </v-btn> -->
 
       </v-toolbar>
+      <v-divider></v-divider>
 
       <v-card-text>
         <v-row>
@@ -66,7 +61,7 @@
             </v-list-item>
             <v-list-item two-line>
               <v-list-item-content>
-                <v-list-item-subtitle>メモ / Comment</v-list-item-subtitle>
+                <v-list-item-subtitle>申請者のコメント / Applicant comment</v-list-item-subtitle>
                 <v-list-item-title>{{application.properties.form_data[1].value || "-"}}</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
@@ -97,7 +92,7 @@
               </template>
             </div>
 
-            <ApprovalComments
+            <RecipientComments
               :application="application"
               @comment_updated="get_application()"/>
 
@@ -126,7 +121,7 @@
 
 
   import PdfViewer from '@/components/PdfViewer.vue'
-  import ApprovalComments from '@/components/ApprovalComments.vue'
+  import RecipientComments from '@/components/RecipientComments.vue'
 
   export default {
     name: 'Application',
@@ -134,7 +129,7 @@
     components: {
       WebHankoContainer,
       PdfViewer,
-      ApprovalComments,
+      RecipientComments,
     },
     data(){
       return {

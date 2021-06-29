@@ -1,8 +1,10 @@
 <template>
 
   <v-card>
-    <v-toolbar flat>
-
+    <v-toolbar
+      flat
+      class="text-center">
+      <v-spacer></v-spacer>
       <v-btn
         @click="previous_page()"
         :disabled="page_number <= 0"
@@ -10,11 +12,18 @@
         <v-icon>mdi-arrow-left</v-icon>
       </v-btn>
       <v-btn
+        @click="download_pdf()"
+        icon>
+        <v-icon>mdi-download</v-icon>
+      </v-btn>
+      <v-btn
         @click="next_page()"
         :disabled="(page_number+1) >= page_count"
         icon>
         <v-icon>mdi-arrow-right</v-icon>
       </v-btn>
+      <v-spacer></v-spacer>
+
 
     </v-toolbar>
     <v-divider></v-divider>
@@ -318,8 +327,6 @@ export default {
 
               // This seems to be a synchronous function
               page.drawImage(pngImage, drawing_parameters)
-
-
             })
 
             resolve()
@@ -339,12 +346,23 @@ export default {
       .catch(error => {
         console.error(error)
       })
-
-
-
-
-
     },
+
+    download_pdf () {
+      const pdf_blob = new Blob([this.shown_pdf], { type: 'application/pdf' })
+
+      if (window.navigator.msSaveOrOpenBlob) {
+        window.navigator.msSaveBlob(pdf_blob, `${this.selected_file_id}.pdf`)
+      }
+      else {
+        const elem = window.document.createElement('a')
+        elem.href = window.URL.createObjectURL(pdf_blob)
+        elem.download = `${this.file_id}.pdf`
+        document.body.appendChild(elem)
+        elem.click()
+        document.body.removeChild(elem)
+      }
+    }
 
   },
   computed: {

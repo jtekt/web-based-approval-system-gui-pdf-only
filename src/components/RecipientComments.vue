@@ -1,6 +1,6 @@
 <template>
   <div class="comments">
-    <v-subheader>コメント / Comments</v-subheader>
+    <v-subheader>承認者のコメント / Recipient comments</v-subheader>
     <template v-for="recipient in ordered_recipients">
       <v-list-item
         two-line
@@ -33,7 +33,7 @@
 <script>
 
 export default {
-  name: 'ApprovalComments',
+  name: 'RecipientComments',
   props: {
     application: Object
   },
