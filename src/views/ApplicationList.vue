@@ -50,6 +50,8 @@
               headers: [
                 {text: 'Date', value: "properties.creation_date"},
                 {text: 'Title', value: 'properties.title'},
+                {text: 'Progress', value: 'progress'},
+                {text: 'Current recipient', value: 'current_recipient.properties.display_name'},
               ],
             },
             {

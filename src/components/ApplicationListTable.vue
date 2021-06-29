@@ -11,7 +11,7 @@
 
     <template v-slot:top>
       <v-toolbar flat>
-        <v-toolbar-title>{{title}} {{direction}}</v-toolbar-title>
+        <v-toolbar-title>{{title}}</v-toolbar-title>
       </v-toolbar>
     </template>
 
@@ -132,7 +132,7 @@
             application.current_recipient = application.recipients
               .slice()
               .sort((a, b) => a.submission.properties.flow_index - b.submission.properties.flow_index)
-              .find(recipient => !recipient.approval && !recipient.refusal)
+              .find(recipient => !recipient.approval)
 
             application.progress = 100 * application.recipients.filter(recipient => recipient.approval).length / application.recipients.length
 
