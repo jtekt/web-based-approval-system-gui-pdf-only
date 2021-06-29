@@ -1,14 +1,12 @@
 <template>
   <v-card>
-    <v-card-title
-      class="text-h4">
-      新規作成
+    <v-card-title class="text-h5">
+      新規作成 / New submission
     </v-card-title>
 
-    <v-card-title
-      class="text-h5">
+    <v-card-subtitle class="mt-2 text-h6">
       ① 申請内容 / Application content
-    </v-card-title>
+    </v-card-subtitle>
 
     <v-card-text>
       <v-row>
@@ -20,12 +18,21 @@
       </v-row>
       <v-row>
         <v-col>
+
+          <v-chip
+            v-if="form_data[0].value"
+            close
+            label
+            @click:close="form_data[0].value = null">
+            アップロード完了 / Upload OK
+          </v-chip>
+
           <v-file-input
             v-if="!form_data[0].value"
             @change="file_upload($event)"
             accept="application/pdf"
             label=".pdf ファイル / .pdf file"/>
-          <span v-else>Upload OK</span>
+
         </v-col>
 
       </v-row>
@@ -36,26 +43,24 @@
             label="メモ / Comment"/>
         </v-col>
       </v-row>
-
-
     </v-card-text>
 
-    <v-row class="align-center">
-      <v-col cols="6">
-        <v-card-title
-          class="text-h5">
-          ② 承認フロー / Approval flow
-        </v-card-title>
-      </v-col>
-      <v-spacer/>
-      <v-col>
+    <v-card-subtitle class="mt-2 text-h6">
+      <span>② 承認フロー / Approval flow</span>
+    </v-card-subtitle>
+
+    <v-card-text >
+      <NewApplicationApprovalFlow
+        v-if="this.recipients.length > 0"
+        :recipients="recipients" />
+
         <v-dialog
           v-model="add_recipient_dialog"
           width="900">
 
           <template v-slot:activator="{ on, attrs }">
             <v-btn
-              color="red lighten-2"
+              color="#444444"
               dark
               v-bind="attrs"
               v-on="on">
@@ -85,7 +90,7 @@
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn
-                color="primary"
+                color="#c00000"
                 text
                 @click="add_recipient_dialog = false">
                 Close
@@ -93,22 +98,19 @@
             </v-card-actions>
           </v-card>
         </v-dialog>
-      </v-col>
-
-    </v-row>
+    </v-card-text>
 
 
-    <NewApplicationApprovalFlow
-      :recipients="recipients"/>
 
-    <v-card-title
-      class="text-h5">
+
+    <v-card-subtitle class="mt-2 text-h6">
       ③ 申請書提出 / Submission
-    </v-card-title>
+    </v-card-subtitle>
+
 
     <v-card-text>
       <v-btn
-        color="red lighten-2"
+        color="#444444"
         dark
         @click="submit()">
         <v-icon>mdi-send</v-icon>
