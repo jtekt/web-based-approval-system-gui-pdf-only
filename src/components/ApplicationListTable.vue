@@ -1,7 +1,7 @@
 <template>
 
   <v-data-table
-
+    disable-sort
     :loading="loading"
     :items="applications"
     :headers="headers"
