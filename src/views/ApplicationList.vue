@@ -94,19 +94,5 @@
 
       }
     },
-
-    mounted(){
-      //this.get_applications()
-    },
-    watch: {
-
-    },
-    methods: {
-
-
-    },
-    computed: {
-
-    }
   }
 </script>

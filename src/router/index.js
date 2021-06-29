@@ -20,7 +20,7 @@ const routes = [
     props: {direction: 'submitted'}
   },
   {
-    path: '/applications/submitted',
+    path: '/applications/received',
     name: 'received_applications',
     component: () => import('../views/ApplicationList.vue'),
     props: {direction: 'received'}

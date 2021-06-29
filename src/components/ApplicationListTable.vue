@@ -11,7 +11,7 @@
 
     <template v-slot:top>
       <v-toolbar flat>
-        <v-toolbar-title>{{title}}</v-toolbar-title>
+        <v-toolbar-title>{{title}} {{direction}}</v-toolbar-title>
       </v-toolbar>
     </template>
 
@@ -77,12 +77,13 @@
         deep: true,
       },
       direction(){
-        this.get_applications()
+        this.get_application_count()
       }
     },
     methods: {
       get_application_count(){
         this.loading = true
+
         const direction = this.direction
         const state = this.state
 
@@ -106,9 +107,11 @@
       get_applications(){
         this.loading = true
 
+
         this.applications = []
 
         const direction = this.direction
+
         const state = this.state
 
         const { page, itemsPerPage } = this.options
@@ -132,7 +135,6 @@
               .find(recipient => !recipient.approval && !recipient.refusal)
 
             application.progress = 100 * application.recipients.filter(recipient => recipient.approval).length / application.recipients.length
-
 
           })
 
