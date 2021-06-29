@@ -6,7 +6,7 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    redirect: { name: 'application_list' }
+    redirect: { name: 'application_list', params: {direction: 'submitted'} }
   },
   {
     path: '/about',
@@ -14,20 +14,8 @@ const routes = [
     component: () => import('../views/About.vue')
   },
   {
-    path: '/applications',
+    path: '/applications/:direction',
     name: 'application_list',
-    component: () => import('../views/ApplicationList.vue')
-  },
-  {
-    path: '/applications/submitted',
-    alias: '/outbox',
-    name: 'submitted_applications',
-    component: () => import('../views/ApplicationList.vue')
-  },
-  {
-    path: '/applications/received',
-    alias: '/inbox',
-    name: 'received_applications',
     component: () => import('../views/ApplicationList.vue')
   },
   {

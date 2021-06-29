@@ -12,17 +12,20 @@
 
         <v-spacer></v-spacer>
 
-        <v-btn icon>
+        <v-btn
+          icon
+          color="#c00000"
+          @click="delete_application()">
           <v-icon>mdi-delete</v-icon>
         </v-btn>
 
-        <v-btn icon>
+        <!-- <v-btn icon>
           <v-icon>mdi-restore</v-icon>
-        </v-btn>
+        </v-btn> -->
 
-        <v-btn icon>
+        <!-- <v-btn icon>
           <v-icon>mdi-close</v-icon>
-        </v-btn>
+        </v-btn> -->
 
       </v-toolbar>
 
@@ -53,7 +56,7 @@
                 <div
                   v-if="index>0"
                   :key="`flow_arrow_${index}`">
-                  <v-icon class="mt-5">mdi-arrow-left</v-icon>
+                  <v-icon class="mt-14">mdi-arrow-left</v-icon>
                 </div>
 
                 <WebHankoContainer
@@ -118,6 +121,18 @@
           if(error.response) console.error(error.response.data)
           else console.error(error)
         })
+      },
+      delete_application(){
+        if(!confirm("ホンマに？")) return
+        const url = `${process.env.VUE_APP_SHINSEI_MANAGER_URL}/applications/${this.application_id}`
+        this.axios.delete(url)
+        .then( () => {
+          this.$router.push({name: 'application_list', params: {direction: 'submitted'}})
+        })
+        .catch((error) => {
+          if(error.response) console.error(error.response.data)
+          else console.error(error)
+        })
       }
     },
     computed: {
@@ -127,7 +142,7 @@
       ordered_recipients(){
         return this.application.recipients
           .slice()
-          .sort((a, b) => b.submission.properties.flow_index - a.submission.properties.flow_index)
+          .sort((a, b) => a.submission.properties.flow_index - b.submission.properties.flow_index)
       },
       current_recipient(){
         // recipients sorted by flow index apparently

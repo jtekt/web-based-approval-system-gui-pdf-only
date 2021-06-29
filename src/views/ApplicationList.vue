@@ -1,13 +1,15 @@
 <template>
   <v-card>
-    <v-card-title>Applications</v-card-title>
+    <v-card-title class="text-h4">{{card_title_lookup[$route.params.direction]}}</v-card-title>
 
-    <v-card-text>
-      <v-data-table
-        :items="applications"
-        :headers="headers"
-        @click:row="row_clicked($event)">
-      </v-data-table>
+    <v-card-text
+      v-for="table in tables[$route.params.direction]"
+      :key="`table_${table.state}`">
+      <ApplicationListTable
+        :title="table.title"
+        :state="table.state"
+        :headers="table.headers"
+        :direction="$route.params.direction"/>
     </v-card-text>
 
 
@@ -15,43 +17,95 @@
 </template>
 
 <script>
-
+  import ApplicationListTable from '@/components/ApplicationListTable.vue'
   export default {
     name: 'ApplicationList',
+    components: {
+      ApplicationListTable
+    },
     data(){
       return {
-        applications: [],
-        headers: [
-          {text: 'ID', value: 'identity'},
-          {text: 'Title', value: 'properties.title'},
-        ]
+        card_title_lookup: {
+          'submitted' : '送信トレイ / Outbox',
+          'received': '受信トレイ / Inbox'
+        },
+        tables: {
+          submitted: [
+            {
+              title: '承認中 / Pending',
+              state: 'pending',
+              headers: [
+                {text: 'Date', value: "properties.creation_date"},
+                {text: 'Title', value: 'properties.title'},
+                {text: 'Progress', value: 'progress'},
+                {text: 'Current recipient', value: 'current_recipient.properties.display_name'},
+              ],
+            },
+            {
+              title: '却下 / Rejected',
+              state: 'rejected',
+              headers: [
+                {text: 'Date', value: "properties.creation_date"},
+                {text: 'Title', value: 'properties.title'},
+              ],
+            },
+            {
+              title: '承認完了 / Approved',
+              state: 'approved',
+              headers: [
+                {text: 'Date', value: "properties.creation_date"},
+                {text: 'Title', value: 'properties.title'},
+              ],
+            },
+          ],
+          received: [
+            {
+              title: '承認中 / Pending',
+              state: 'pending',
+              headers: [
+                {text: 'Date', value: "properties.creation_date"},
+                {text: 'Title', value: 'properties.title'},
+                {text: 'Applicant', value: 'applicant.properties.display_name'},
+              ],
+            },
+            {
+              title: '却下 / Rejected',
+              state: 'rejected',
+              headers: [
+                {text: 'Date', value: "properties.creation_date"},
+                {text: 'Title', value: 'properties.title'},
+                {text: 'Applicant', value: 'applicant.properties.display_name'},
+              ],
+            },
+            {
+              title: '承認完了 / Approved',
+              state: 'approved',
+              headers: [
+                {text: 'Date', value: "properties.creation_date"},
+                {text: 'Title', value: 'properties.title'},
+                {text: 'Applicant', value: 'applicant.properties.display_name'},
+              ],
+            },
+          ]
+        }
+
       }
     },
 
-    components: {
-    },
     mounted(){
-      this.get_applications()
+      //this.get_applications()
+    },
+    watch: {
+
     },
     methods: {
-      get_applications(){
-        const direction = 'submitted'
-        const state = 'pending'
-        const url = `${process.env.VUE_APP_SHINSEI_MANAGER_URL}/v2/applications/${direction}/${state}`
-        this.axios.get(url, {
-          params: {}
-        })
-        .then( ({data}) => {
-          this.applications = data
-        })
-        .catch((error) => {
-          console.error(error)
-        })
-      },
-      row_clicked(application){
-        this.$router.push({name: 'application', params: {application_id: application.identity}})
-      }
 
+
+    },
+    computed: {
+      direction(){
+        return this.$route.params.direction
+      }
     }
   }
 </script>
