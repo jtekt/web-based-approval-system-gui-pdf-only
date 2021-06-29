@@ -67,7 +67,7 @@
             <v-list-item two-line>
               <v-list-item-content>
                 <v-list-item-subtitle>メモ / Comment</v-list-item-subtitle>
-                <v-list-item-title>{{application.properties.form_data.memo || "-"}}</v-list-item-title>
+                <v-list-item-title>{{application.properties.form_data[1].value || "-"}}</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
 
