@@ -66,7 +66,8 @@
                   :key="`recipient_${index}`"
                   :recipient="recipient"
                   :current_recipient="current_recipient"
-                  @send_email="send_email_to_recipient(recipient)"/>
+                  @send_email="send_email_to_recipient(recipient)"
+                  @reject="reject_application()"/>
               </template>
             </div>
 
@@ -123,6 +124,18 @@
           else console.error(error)
         })
       },
+      reject_application(){
+        const url = `${process.env.VUE_APP_SHINSEI_MANAGER_URL}/applications/${this.application.identity}/reject`
+
+        this.axios.post(url)
+        .then(() => {
+          this.get_application()
+        })
+        .catch((error) => {
+          console.error(error)
+          alert(`Error approving application`)
+        })
+      },
       delete_application(){
         if(!confirm("ホンマに？")) return
         const url = `${process.env.VUE_APP_SHINSEI_MANAGER_URL}/applications/${this.application_id}`
@@ -172,6 +185,7 @@
       },
       current_recipient(){
         // recipients sorted by flow index apparently
+        if(this.application.recipients.find(recipient => recipient.refusal)) return null
         return this.application.recipients
         .slice()
         .sort((a, b) => a.submission.properties.flow_index - b.submission.properties.flow_index)

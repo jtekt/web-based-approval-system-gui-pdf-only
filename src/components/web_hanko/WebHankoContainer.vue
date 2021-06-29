@@ -19,14 +19,26 @@
         :approvalId="recipient.approval.identity"
         :date="recipient.approval.properties.date"/>
 
-      <!-- probably need date of rejection as well as motive -->
-      <Rejection
-        v-else-if="recipient.rejection"/>
+
+
+      <v-icon
+        color="#c00000"
+        x-large
+        v-else-if="recipient.refusal">mdi-close-circle</v-icon>
+
+      <v-btn
+        icon
+        color="#c00000"
+        v-else-if="recipient_is_current_recipient && user_is_recipient"
+        @click="$emit('reject')">
+        <v-icon x-large>mdi-close</v-icon>
+      </v-btn>
+
 
       <v-btn
         icon
         v-else-if="recipient_is_current_recipient"
-        @click="send_email()">
+        @click="$emit('send_email')">
         <v-icon>mdi-email</v-icon>
       </v-btn>
 
@@ -39,13 +51,11 @@
 
 <script>
 import WebHanko from './WebHanko.vue'
-import Rejection from './Rejection.vue'
 
 export default {
   name: 'WebHankoContainer',
   components: {
     WebHanko,
-    Rejection
   },
   props: {
     recipient: { type: Object, required: true },
@@ -57,13 +67,11 @@ export default {
     }
   },
   methods: {
-    send_email () {
-      this.$emit('send_email', this.recipient)
-    }
+
   },
   computed: {
     current_user_id() {
-      return this.$store.state.current_user
+      return this.$store.state.current_user.identity
     },
     show_toolbox () {
       // If the user is a recipient that has not approved or rejected the application and also is next recipient
@@ -73,6 +81,7 @@ export default {
         this.is_current_recipient
     },
     recipient_is_current_recipient(){
+      if(!this.current_recipient) return false
       return this.recipient.identity === this.current_recipient.identity
     },
     user_profile_url () {
