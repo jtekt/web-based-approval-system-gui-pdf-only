@@ -153,6 +153,9 @@ export default {
   components: {
     UserPicker,
   },
+  mounted () {
+    if (this.$route.query.copy_of) this.recreate_application_content()
+  },
   methods: {
     submit(){
 
@@ -191,6 +194,37 @@ export default {
     },
     add_to_recipients(new_recipient) {
       this.recipients.push(new_recipient)
+    },
+    recreate_application_content () {
+      // This function is called when the application is a dubplicate of an existing one
+
+      // NOTE: NO CONFIDENTIALITY FOR NOW!
+
+      const application_id = this.$route.query.copy_of
+      const url = `${process.env.VUE_APP_SHINSEI_MANAGER_URL}/v2/applications/${application_id}`
+      this.axios.get(url)
+        .then(({data}) => {
+
+
+          const original_application = data
+
+          // Set application details back
+          this.title = original_application.properties.title
+          this.confidential = original_application.properties.private
+
+          original_application.properties.form_data = JSON.parse(original_application.properties.form_data)
+          this.form_data = original_application.properties.form_data
+
+
+          // Recreate flow
+          this.recipients = original_application.recipients.sort((a, b) => {
+            return a.submission.properties.flow_index - b.submission.properties.flow_index
+          })
+
+        })
+        .catch((error) => {
+          console.error(error)
+        })
     },
   }
 }

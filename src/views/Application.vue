@@ -21,9 +21,11 @@
           <v-icon>mdi-delete</v-icon>
         </v-btn>
 
-        <!-- <v-btn icon>
+        <v-btn
+          icon
+          @click="$router.push({ name: 'new_application', query: { copy_of: application.identity } })">
           <v-icon>mdi-restore</v-icon>
-        </v-btn> -->
+        </v-btn>
 
         <!-- <v-btn icon>
           <v-icon>mdi-close</v-icon>
