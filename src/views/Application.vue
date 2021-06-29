@@ -37,18 +37,30 @@
         <v-row>
 
           <v-col>
-              <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>ID</v-list-item-subtitle>
-                  <v-list-item-title>{{application.identity}}</v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-              <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>Memo</v-list-item-subtitle>
-                  <v-list-item-title>{{application.properties.form_data.memo || "-"}}</v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
+            <v-list-item two-line>
+              <v-list-item-content>
+                <v-list-item-subtitle>ID</v-list-item-subtitle>
+                <v-list-item-title>{{application.identity}}</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item two-line>
+              <v-list-item-content>
+                <v-list-item-subtitle>日付 / Date</v-list-item-subtitle>
+                <v-list-item-title>{{format_date_neo4j(application.properties.creation_date)}}</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item two-line>
+              <v-list-item-content>
+                <v-list-item-subtitle>申請者 / Applicant</v-list-item-subtitle>
+                <v-list-item-title>{{application.applicant.properties.display_name}}</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item two-line>
+              <v-list-item-content>
+                <v-list-item-subtitle>メモ / Comment</v-list-item-subtitle>
+                <v-list-item-title>{{application.properties.form_data.memo || "-"}}</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
           </v-col>
 
           <!-- Approval flow -->
@@ -152,6 +164,9 @@
       },
       application_approved_callback(){
         this.get_application()
+      },
+      format_date_neo4j(date){
+        return `${date.year}/${date.month}/${date.day}`
       },
       send_email_to_recipient (recipient) {
         // Weird formatting because preserves indentation
