@@ -9,11 +9,11 @@
     :server-items-length="application_count"
     @click:row="row_clicked($event)">
 
-    <template v-slot:top>
+    <!-- <template v-slot:top>
       <v-toolbar flat>
         <v-toolbar-title>{{title}}</v-toolbar-title>
       </v-toolbar>
-    </template>
+    </template> -->
 
     <template
       v-slot:body
