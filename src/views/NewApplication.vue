@@ -40,70 +40,66 @@
 
     </v-card-text>
 
-    <v-card-title
-      class="text-h5">
-      ② 承認フロー / Approval flow
-    </v-card-title>
+    <v-row class="align-center">
+      <v-col cols="6">
+        <v-card-title
+          class="text-h5">
+          ② 承認フロー / Approval flow
+        </v-card-title>
+      </v-col>
+      <v-spacer/>
+      <v-col>
+        <v-dialog
+          v-model="add_recipient_dialog"
+          width="900">
+
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn
+              color="red lighten-2"
+              dark
+              v-bind="attrs"
+              v-on="on">
+              <v-icon>mdi-account-plus</v-icon>
+              <span>承認者追加</span>
+
+            </v-btn>
+          </template>
 
 
-    <v-card-text>
-
-      <v-row class="align-center">
-        <v-col
-          v-for="(recipient, i) in recipients"
-          :key="`recipient_${i}`">
           <v-card>
-            <v-card-text>{{recipient.properties.display_name}}</v-card-text>
-          </v-card>
-        </v-col>
+            <v-card-title class="text-h5">
+              Add user to approval flow
+            </v-card-title>
 
-        <v-col>
-          <v-dialog
-            v-model="add_recipient_dialog"
-            width="800">
+            <v-card-text>
+              <UserPicker
+                class="user_picker"
+                v-on:selection="add_to_recipients($event)"/>
+            </v-card-text>
 
-            <template v-slot:activator="{ on, attrs }">
+            <v-card-text>
+              <NewApplicationApprovalFlow
+                :recipients="recipients"/>
+            </v-card-text>
+
+            <v-card-actions>
+              <v-spacer></v-spacer>
               <v-btn
-                color="red lighten-2"
-                dark
-                v-bind="attrs"
-                v-on="on">
-                <v-icon>mdi-account-plus</v-icon>
-                <span>承認者追加</span>
-
+                color="primary"
+                text
+                @click="add_recipient_dialog = false">
+                Close
               </v-btn>
-            </template>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </v-col>
+
+    </v-row>
 
 
-            <v-card>
-              <v-card-title class="text-h5">
-                Add user to approval flow
-              </v-card-title>
-
-              <v-card-text>
-                <UserPicker
-                  class="user_picker"
-                  v-on:selection="add_to_recipients($event)"/>
-              </v-card-text>
-
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn
-                  color="primary"
-                  text
-                  @click="add_recipient_dialog = false">
-                  Close
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-        </v-col>
-      </v-row>
-
-
-
-
-    </v-card-text>
+    <NewApplicationApprovalFlow
+      :recipients="recipients"/>
 
     <v-card-title
       class="text-h5">
@@ -132,6 +128,7 @@
 
 <script>
 import UserPicker from '@moreillon/vue_user_picker'
+import NewApplicationApprovalFlow from '@/components/NewApplicationApprovalFlow.vue'
 
 export default {
   name: 'NewApplication',
@@ -152,6 +149,7 @@ export default {
 
   components: {
     UserPicker,
+    NewApplicationApprovalFlow,
   },
   mounted () {
     if (this.$route.query.copy_of) this.recreate_application_content()
@@ -194,6 +192,9 @@ export default {
     },
     add_to_recipients(new_recipient) {
       this.recipients.push(new_recipient)
+    },
+    delete_recipient(recipient_index) {
+      this.recipients.splice(recipient_index,1)
     },
     recreate_application_content () {
       // This function is called when the application is a dubplicate of an existing one

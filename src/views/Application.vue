@@ -52,7 +52,16 @@
             <v-list-item two-line>
               <v-list-item-content>
                 <v-list-item-subtitle>申請者 / Applicant</v-list-item-subtitle>
-                <v-list-item-title>{{application.applicant.properties.display_name}}</v-list-item-title>
+                <v-list-item-title>
+                  <span>{{application.applicant.properties.display_name}}</span>
+                  <v-btn
+                    v-if="!current_recipient"
+                    @click="send_email_to_applicant()"
+                    icon>
+                    <v-icon>mdi-email</v-icon>
+                  </v-btn>
+
+                </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
             <v-list-item two-line>
@@ -61,6 +70,9 @@
                 <v-list-item-title>{{application.properties.form_data.memo || "-"}}</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
+
+
+
           </v-col>
 
           <!-- Approval flow -->
@@ -178,7 +190,7 @@
         // Weird formatting because preserves indentation
         window.location.href = `
   mailto:${recipient.properties.email_address}
-  ?subject=[申請マネージャ] ${this.application.properties.typ}
+  ?subject=[申請マネージャ] ${this.application.properties.type}
   &body=${recipient.properties.display_name} 様 %0D%0A
   %0D%0A
   申請マネージャーの通知メールです。 %0D%0A
@@ -196,6 +208,27 @@
   確認お願いします。%0D%0A
   %0D%0A`
       },
+      send_email_to_applicant () {
+        // Weird formatting because preserves indentation
+        // TODO: Stop relying on name_kanji
+        window.location.href = `
+  mailto:${this.application.applicant.properties.email_address}
+  ?subject=[申請マネージャ] ${this.application.properties.type}
+  &body=${this.application.applicant.properties.display_name} 様 %0D%0A
+  %0D%0A
+  申請マネージャーの通知メールです。 %0D%0A
+  %0D%0A
+  タイプ: ${this.application.properties.type} %0D%0A
+  タイトル: ${this.application.properties.title} %0D%0A
+  提出先URL: ${window.location.origin}/applications/${this.application.identity} %0D%0A
+  %0D%0A
+  ※IEでは動作しません。Edge (Chromium)/Firefox/GoogleChromeをご使用ください。　%0D%0A
+  ※詳しくは ${window.location.origin}/info%0D%0A
+  %0D%0A
+  確認お願いします。%0D%0A
+  %0D%0A
+          `
+      },
     },
     computed: {
       application_id(){
@@ -211,7 +244,7 @@
         if(this.application.recipients.find(recipient => recipient.refusal)) return null
         return this.application.recipients
         .slice()
-        .sort((a, b) => b.submission.properties.flow_index - a.submission.properties.flow_index)
+        .sort((a, b) => a.submission.properties.flow_index - b.submission.properties.flow_index)
         .find(recipient => !recipient.approval && !recipient.refusal)
       },
 
