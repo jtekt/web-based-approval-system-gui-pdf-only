@@ -15,17 +15,41 @@
         <span>新規作成 / New submission</span>
 
       </v-btn>
+
+      <template v-slot:extension>
+        <v-tabs
+          color="#444444"
+          v-model="tab"
+          align-with-title>
+
+          <v-tabs-slider color="#c00000"></v-tabs-slider>
+
+          <v-tab
+            v-for="table in tables[direction]"
+            :key="`tab_${table.state}`">
+            {{ table.title }}
+          </v-tab>
+        </v-tabs>
+      </template>
     </v-toolbar>
 
-    <v-card-text
-      v-for="table in tables[direction]"
-      :key="`table_${table.state}`">
-      <ApplicationListTable
-        :title="table.title"
-        :state="table.state"
-        :headers="table.headers"
-        :direction="direction"/>
-    </v-card-text>
+    <v-divider></v-divider>
+
+    <v-tabs-items v-model="tab">
+      <v-tab-item
+        v-for="table in tables[direction]"
+        :key="`tab_item_${table.state}`">
+        <v-card-text>
+          <ApplicationListTable
+            :title="table.title"
+            :state="table.state"
+            :headers="table.headers"
+            :direction="direction"/>
+        </v-card-text>
+      </v-tab-item>
+    </v-tabs-items>
+
+
 
 
   </v-card>
@@ -43,10 +67,13 @@
     },
     data(){
       return {
+        tab: null,
         card_title_lookup: {
           'submitted' : '送信トレイ / Outbox',
           'received': '受信トレイ / Inbox'
         },
+        items: ['承認中 / Pending', '却下 / Rejected', '承認完了 / Approved'],
+
         tables: {
           submitted: [
             {
