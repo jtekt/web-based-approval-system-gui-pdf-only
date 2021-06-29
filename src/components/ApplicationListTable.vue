@@ -84,12 +84,10 @@
       get_application_count(){
         this.loading = true
 
-        const direction = this.direction
-        const state = this.state
+        const url = `${process.env.VUE_APP_SHINSEI_MANAGER_URL}/v2/applications/${this.direction}/${this.state}/count`
 
-        const url = `${process.env.VUE_APP_SHINSEI_MANAGER_URL}/v2/applications/${direction}/${state}/count`
+        const params = { type: this.type }
 
-        const params = {type: this.type}
 
         this.axios.get(url, {params})
         .then( ({data}) => {

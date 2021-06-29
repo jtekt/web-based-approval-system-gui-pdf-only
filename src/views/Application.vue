@@ -170,7 +170,7 @@
         const url = `${process.env.VUE_APP_SHINSEI_MANAGER_URL}/applications/${this.application_id}`
         this.axios.delete(url)
         .then( () => {
-          this.$router.push({name: 'application_list', params: {direction: 'submitted'}})
+          this.$router.push({name: 'submitted_applications'})
         })
         .catch((error) => {
           if(error.response) console.error(error.response.data)

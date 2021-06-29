@@ -60,12 +60,12 @@
 
           <template v-slot:activator="{ on, attrs }">
             <v-btn
-              color="#444444"
+              color="#c00000"
               dark
               v-bind="attrs"
               v-on="on">
               <v-icon>mdi-account-plus</v-icon>
-              <span>承認者追加</span>
+              <span>承認者追加 / Add recipient</span>
 
             </v-btn>
           </template>
@@ -73,7 +73,7 @@
 
           <v-card>
             <v-card-title class="text-h5">
-              Add user to approval flow
+              承認者追加 / Add recipient
             </v-card-title>
 
             <v-card-text>
@@ -82,9 +82,13 @@
                 v-on:selection="add_to_recipients($event)"/>
             </v-card-text>
 
-            <v-card-text>
+            <v-card-text v-if="recipients.length > 0">
               <NewApplicationApprovalFlow
                 :recipients="recipients"/>
+            </v-card-text>
+
+            <v-card-text v-else>
+              承認者が選ばれていません / No recipient selected
             </v-card-text>
 
             <v-card-actions>
@@ -107,12 +111,12 @@
       ③ 申請書提出 / Submission
     </v-card-subtitle>
 
-
     <v-card-text>
       <v-btn
-        color="#444444"
-        dark
-        @click="submit()">
+        color="#c00000"
+        :dark="application_valid"
+        @click="submit()"
+        :disabled="!application_valid">
         <v-icon>mdi-send</v-icon>
         <span>提出 / Submit</span>
 
@@ -193,6 +197,8 @@ export default {
       .finally(() => { this.file_uploading = false })
     },
     add_to_recipients(new_recipient) {
+      const existing_recipient = this.recipients.find(recipient => recipient.identity === new_recipient.identity)
+      if (existing_recipient) return alert('Duplicates not allowed')
       this.recipients.push(new_recipient)
     },
     delete_recipient(recipient_index) {
@@ -206,29 +212,34 @@ export default {
       const application_id = this.$route.query.copy_of
       const url = `${process.env.VUE_APP_SHINSEI_MANAGER_URL}/v2/applications/${application_id}`
       this.axios.get(url)
-        .then(({data}) => {
+      .then(({data}) => {
 
 
-          const original_application = data
+        const original_application = data
 
-          // Set application details back
-          this.title = original_application.properties.title
-          this.confidential = original_application.properties.private
+        // Set application details back
+        this.title = original_application.properties.title
+        this.confidential = original_application.properties.private
 
-          original_application.properties.form_data = JSON.parse(original_application.properties.form_data)
-          this.form_data = original_application.properties.form_data
+        original_application.properties.form_data = JSON.parse(original_application.properties.form_data)
+        this.form_data = original_application.properties.form_data
 
 
-          // Recreate flow
-          this.recipients = original_application.recipients.sort((a, b) => {
-            return a.submission.properties.flow_index - b.submission.properties.flow_index
-          })
-
+        // Recreate flow
+        this.recipients = original_application.recipients.sort((a, b) => {
+          return a.submission.properties.flow_index - b.submission.properties.flow_index
         })
-        .catch((error) => {
-          console.error(error)
-        })
+
+      })
+      .catch((error) => {
+        console.error(error)
+      })
     },
+  },
+  computed: {
+    application_valid(){
+      return this.title !== '' && this.form_data[0].value && this.recipients.length > 0
+    }
   }
 }
 </script>

@@ -1,6 +1,21 @@
 <template>
   <v-card>
-    <v-card-title class="text-h4">{{card_title_lookup[direction]}}</v-card-title>
+
+    <v-toolbar flat>
+      <v-toolbar-title
+        class="text-h4">
+        {{card_title_lookup[direction]}}
+      </v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-btn
+        color="#c00000"
+        dark
+        :to="{name:'new_application'}">
+        <v-icon>mdi-plus</v-icon>
+        <span>新規作成 / New submission</span>
+
+      </v-btn>
+    </v-toolbar>
 
     <v-card-text
       v-for="table in tables[direction]"
