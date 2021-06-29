@@ -45,8 +45,8 @@ export default {
     },
     nav: [
       {title: '新規作成 / New', to: {name: 'new_application'}, icon: 'mdi-plus'},
-      {title: '送信トレイ / Outbox', to: {name: 'application_list', params: {direction: 'submitted'}}, icon: 'mdi-inbox-arrow-up'},
-      {title: '受信トレイ / Inbox', to: {name: 'application_list',  params: {direction: 'received'}}, icon: 'mdi-inbox-arrow-down'},
+      {title: '送信トレイ / Outbox', to: {name: 'submitted_applications'}, icon: 'mdi-inbox-arrow-up'},
+      {title: '受信トレイ / Inbox', to: {name: 'received_applications'}, icon: 'mdi-inbox-arrow-down'},
       {title: 'About', to: {name: 'about'}, icon: 'mdi-information-outline'},
     ]
   }),

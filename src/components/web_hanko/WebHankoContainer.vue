@@ -23,37 +23,15 @@
       <Rejection
         v-else-if="recipient.rejection"/>
 
-    </div>
-
-    <!-- Tools to accept or reject an application -->
-    <div
-      class="toolbox"
-      v-if="show_toolbox">
-
-      <check-icon
-        class="approval_control approve_button"
-        v-on:click="$emit('approve')"/>
-
-      <close-icon
-        class="approval_control disapprove_button"
-        v-on:click="$emit('reject')"/>
-
-    </div>
-
-    <!-- Sending an email -->
-    <div
-      class="toolbox"
-      v-else-if="is_current_submission
-        && !this.rejection
-        && user_is_applicant">
-
-      <button
-        type="button"
+      <v-btn
+        icon
+        v-else-if="recipient_is_current_recipient"
         @click="send_email()">
-        <email-icon />
-      </button>
+        <v-icon>mdi-email</v-icon>
+      </v-btn>
 
     </div>
+
 
   </div>
 
@@ -71,7 +49,7 @@ export default {
   },
   props: {
     recipient: { type: Object, required: true },
-    is_current_submission: { type: Boolean, default () { return false } }
+    current_recipient: Object,
   },
   data () {
     return {
@@ -92,7 +70,10 @@ export default {
       return this.user_is_recipient &&
         !this.approval &&
         !this.rejection &&
-        this.is_current_submission
+        this.is_current_recipient
+    },
+    recipient_is_current_recipient(){
+      return this.recipient.identity === this.current_recipient.identity
     },
     user_profile_url () {
       return `${process.env.VUE_APP_EMPLOYEE_MANAGER_FRONT_URL}/users/${this.recipient.identity}`
@@ -154,7 +135,11 @@ export default {
 }
 
 .hanko_area{
+  /* Actually used! */
   height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .toolbox{

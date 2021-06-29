@@ -128,7 +128,7 @@
 
             application.current_recipient = application.recipients
               .slice()
-              .sort((a, b) => b.submission.properties.flow_index - a.submission.properties.flow_index)
+              .sort((a, b) => a.submission.properties.flow_index - b.submission.properties.flow_index)
               .find(recipient => !recipient.approval && !recipient.refusal)
 
             application.progress = 100 * application.recipients.filter(recipient => recipient.approval).length / application.recipients.length

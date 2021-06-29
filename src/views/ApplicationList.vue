@@ -1,15 +1,15 @@
 <template>
   <v-card>
-    <v-card-title class="text-h4">{{card_title_lookup[$route.params.direction]}}</v-card-title>
+    <v-card-title class="text-h4">{{card_title_lookup[direction]}}</v-card-title>
 
     <v-card-text
-      v-for="table in tables[$route.params.direction]"
+      v-for="table in tables[direction]"
       :key="`table_${table.state}`">
       <ApplicationListTable
         :title="table.title"
         :state="table.state"
         :headers="table.headers"
-        :direction="$route.params.direction"/>
+        :direction="direction"/>
     </v-card-text>
 
 
@@ -22,6 +22,9 @@
     name: 'ApplicationList',
     components: {
       ApplicationListTable
+    },
+    props: {
+      direction: String,
     },
     data(){
       return {
@@ -103,9 +106,7 @@
 
     },
     computed: {
-      direction(){
-        return this.$route.params.direction
-      }
+
     }
   }
 </script>

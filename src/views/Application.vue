@@ -1,6 +1,8 @@
 <template>
   <v-card>
-
+    <v-toolbar-title v-if="!application">
+      Aplication
+    </v-toolbar-title>
     <template v-if="application">
 
       <v-toolbar
@@ -49,6 +51,7 @@
 
           <!-- Approval flow -->
           <v-col>
+
             <div class="approval_flow" >
               <template
                 v-for="(recipient, index) in ordered_recipients" >
@@ -56,18 +59,16 @@
                 <div
                   v-if="index>0"
                   :key="`flow_arrow_${index}`">
-                  <v-icon class="mt-14">mdi-arrow-left</v-icon>
+                  <v-icon class="mt-16">mdi-arrow-left</v-icon>
                 </div>
 
                 <WebHankoContainer
                   :key="`recipient_${index}`"
-                  :recipient="recipient"/>
+                  :recipient="recipient"
+                  :current_recipient="current_recipient"
+                  @send_email="send_email_to_recipient(recipient)"/>
               </template>
             </div>
-
-
-
-
 
           </v-col>
         </v-row>
@@ -77,7 +78,7 @@
       <v-card-text>
         <PdfViewer
           :application="application"
-          @pdf_stamped="get_application()"/>
+          @pdf_stamped="application_approved_callback()"/>
       </v-card-text>
 
 
@@ -133,7 +134,32 @@
           if(error.response) console.error(error.response.data)
           else console.error(error)
         })
-      }
+      },
+      application_approved_callback(){
+        this.get_application()
+      },
+      send_email_to_recipient (recipient) {
+        // Weird formatting because preserves indentation
+        window.location.href = `
+  mailto:${recipient.properties.email_address}
+  ?subject=${this.email_subject}
+  &body=${recipient.properties.display_name} 様 %0D%0A
+  %0D%0A
+  申請マネージャーの通知メールです。 %0D%0A
+  %0D%0A
+  申請を提出しました。 %0D%0A
+  %0D%0A
+  申請者: ${this.application.applicant.properties.display_name} %0D%0A
+  タイプ: ${this.application.properties.type} %0D%0A
+  タイトル: ${this.application.properties.title} %0D%0A
+  提出先URL: ${window.location.origin}/applications/${this.application.identity} %0D%0A
+  %0D%0A
+  ※IEでは動作しません。Edge (Chromium)/Firefox/GoogleChromeをご使用ください。　%0D%0A
+  ※詳しくは ${window.location.origin}/info%0D%0A
+  %0D%0A
+  確認お願いします。%0D%0A
+  %0D%0A`
+      },
     },
     computed: {
       application_id(){
@@ -142,11 +168,14 @@
       ordered_recipients(){
         return this.application.recipients
           .slice()
-          .sort((a, b) => a.submission.properties.flow_index - b.submission.properties.flow_index)
+          .sort((a, b) => b.submission.properties.flow_index - a.submission.properties.flow_index)
       },
       current_recipient(){
         // recipients sorted by flow index apparently
-        return this.ordered_recipients.find(recipient => !recipient.approval && !recipient.refusal)
+        return this.application.recipients
+        .slice()
+        .sort((a, b) => a.submission.properties.flow_index - b.submission.properties.flow_index)
+        .find(recipient => !recipient.approval && !recipient.refusal)
       },
 
 

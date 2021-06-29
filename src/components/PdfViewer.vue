@@ -167,6 +167,7 @@ export default {
 
     async pdf_clicked (event) {
       // Draw a hanko where the user has clicked if the user has approved the application
+      if(!this.current_recipient_is_current_user) return
       if (!confirm(`Apply Hanko here?`)) return
 
       const pages = this.pdfDoc.getPages()
@@ -356,8 +357,10 @@ export default {
     },
     current_recipient(){
       // recipients sorted by flow index apparently
-      const recipients = this.application.recipients
-      return recipients.find(recipient => !recipient.approval && !recipient.refusal)
+      return this.application.recipients
+      .slice()
+      .sort((a, b) => a.submission.properties.flow_index - b.submission.properties.flow_index)
+      .find(recipient => !recipient.approval && !recipient.refusal)
     },
     current_recipient_is_current_user(){
       if(!this.current_recipient) return false
