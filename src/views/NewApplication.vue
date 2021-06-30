@@ -19,8 +19,12 @@
       <v-row>
         <v-col>
 
+          <v-progress-linear
+            v-if="file_uploading"
+            indeterminate/>
+
           <v-chip
-            v-if="form_data[0].value"
+            v-else-if="form_data[0].value"
             close
             label
             @click:close="form_data[0].value = null">
@@ -28,7 +32,7 @@
           </v-chip>
 
           <v-file-input
-            v-if="!form_data[0].value"
+            v-else
             @change="file_upload($event)"
             accept="application/pdf"
             label=".pdf ファイル / .pdf file"/>
