@@ -1,6 +1,7 @@
 <template>
   <div class="comments">
     <v-subheader>承認者のコメント / Recipient comments</v-subheader>
+
     <template v-for="recipient in ordered_recipients">
       <v-list-item
         two-line
@@ -9,19 +10,17 @@
 
         <v-list-item-content>
           <v-list-item-subtitle>{{recipient.properties.display_name}}</v-list-item-subtitle>
-          <v-list-item-title>
-
-            <span>{{get_recipient_comment(recipient) || 'コメント無し / No comment'}}</span>
-
-            <v-btn
-              v-if="recipient_is_user(recipient)"
-              @click="update_comment(recipient)"
-              icon>
-              <v-icon>mdi-pencil</v-icon>
-            </v-btn>
-
-          </v-list-item-title>
+          <v-list-item-title>{{get_recipient_comment(recipient) || 'コメント無し / No comment'}}</v-list-item-title>
         </v-list-item-content>
+
+        <v-list-item-icon v-if="recipient_is_user(recipient)">
+          <v-btn
+            v-if="recipient_is_user(recipient)"
+            @click="update_comment(recipient)"
+            icon>
+            <v-icon>mdi-pencil</v-icon>
+          </v-btn>
+        </v-list-item-icon>
 
       </v-list-item>
 

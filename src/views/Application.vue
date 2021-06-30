@@ -28,12 +28,12 @@
 
 
           <v-card>
-            <v-card-title>Help</v-card-title>
+            <v-card-title class="text-h4">Help</v-card-title>
 
-            <v-card-subtitle class="mt-4">機能</v-card-subtitle>
+            <v-card-subtitle class="mt-4 text-h6">機能</v-card-subtitle>
             <v-card-text>添付のPDFに捺印（サイズ変更も可能）が可能です。</v-card-text>
 
-            <v-card-subtitle>回付手順</v-card-subtitle>
+            <v-card-subtitle class="mt-4 text-h6">回付手順</v-card-subtitle>
             <v-card-text>
               <v-list dense>
                 <v-list-item>
@@ -60,7 +60,7 @@
 
             </v-card-text>
 
-            <v-card-subtitle>捺印済みファイルのダウンロード手順</v-card-subtitle>
+            <v-card-subtitle class="mt-4 text-h6">捺印済みファイルのダウンロード手順</v-card-subtitle>
             <v-card-text>ページに表示されているPDF上部にあるダウンロードから捺印済みのファイルをダウンロードします。</v-card-text>
 
             <v-card-actions>
@@ -107,14 +107,23 @@
           <span>却下 / Reject</span>
         </v-btn> -->
 
-        <v-btn
-          dark
-          class="mr-2"
-          color="#c00000"
-          @click="delete_application()">
-          <v-icon>mdi-delete</v-icon>
-          <span>申請削除 / Delete</span>
-        </v-btn>
+        <v-tooltip bottom>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            v-bind="attrs"
+            v-on="on"
+            dark
+            class="mr-2"
+            color="#c00000"
+            @click="delete_application()">
+            <v-icon>mdi-delete</v-icon>
+            <span>申請削除 / Delete</span>
+          </v-btn>
+        </template>
+        <span>申請削除 / Delete</span>
+      </v-tooltip>
+
+
 
 
       </v-toolbar>
@@ -232,6 +241,7 @@
         const url = `${process.env.VUE_APP_SHINSEI_MANAGER_URL}/v2/applications/${this.application_id}`
         this.axios.get(url)
         .then(({data}) => {
+          console.log(data)
           this.application = data
           this.application.properties.form_data = JSON.parse(this.application.properties.form_data)
         })
