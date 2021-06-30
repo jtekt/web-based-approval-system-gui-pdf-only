@@ -26,21 +26,21 @@
         x-large
         v-else-if="recipient.refusal">mdi-close-circle</v-icon>
 
-      <v-btn
+      <!-- <v-btn
         icon
         color="#c00000"
         v-else-if="recipient_is_current_recipient && user_is_recipient"
         @click="$emit('reject')">
         <v-icon x-large>mdi-close</v-icon>
-      </v-btn>
+      </v-btn> -->
 
 
-      <v-btn
+      <!-- <v-btn
         icon
         v-else-if="recipient_is_current_recipient"
         @click="$emit('send_email')">
         <v-icon>mdi-email</v-icon>
-      </v-btn>
+      </v-btn> -->
 
     </div>
 

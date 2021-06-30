@@ -59,7 +59,6 @@ export default {
     get_recipient_comment(recipient){
       const decision = recipient.approval || recipient.refusal
       if(!decision) return
-      console.log(decision)
       return decision.properties.comment
 
     },

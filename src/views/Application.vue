@@ -11,17 +11,71 @@
 
         <v-spacer></v-spacer>
 
+        <v-dialog
+          v-model="help_dialog"
+          width="500">
+
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn
+              class="mr-2"
+              v-bind="attrs"
+              v-on="on">
+              <v-icon>mdi-information</v-icon>
+              <span>Help</span>
+
+            </v-btn>
+          </template>
+
+
+          <v-card>
+            <v-card-title class="text-h5">
+              Help
+            </v-card-title>
+
+            <v-card-text>
+              1. Click the pdf
+            </v-card-text>
+
+
+
+          </v-card>
+        </v-dialog>
+
+
         <v-btn
-          icon
+          v-if="show_email_button"
+          class="mr-2"
+          @click="email_button_clicked()">
+          <v-icon>mdi-email</v-icon>
+          <span>メール作成 / Send email</span>
+        </v-btn>
+
+
+
+
+        <v-btn
+          class="mr-2"
+          @click="$router.push({ name: 'new_application', query: { copy_of: application.identity } })">
+          <v-icon>mdi-restore</v-icon>
+          <span>再申請 / Re-submit</span>
+        </v-btn>
+
+        <!-- <v-btn
+          dark
+          class="mr-2"
+          color="#c00000"
+          @click="reject_application()">
+          <v-icon>mdi-close</v-icon>
+          <span>却下 / Reject</span>
+        </v-btn> -->
+
+        <v-btn
+          dark
+          class="mr-2"
           color="#c00000"
           @click="delete_application()">
           <v-icon>mdi-delete</v-icon>
-        </v-btn>
-
-        <v-btn
-          icon
-          @click="$router.push({ name: 'new_application', query: { copy_of: application.identity } })">
-          <v-icon>mdi-restore</v-icon>
+          <span>申請削除 / Delete</span>
         </v-btn>
 
 
@@ -49,13 +103,6 @@
                 <v-list-item-subtitle>申請者 / Applicant</v-list-item-subtitle>
                 <v-list-item-title>
                   <span>{{application.applicant.properties.display_name}}</span>
-                  <v-btn
-                    v-if="!current_recipient"
-                    @click="send_email_to_applicant()"
-                    icon>
-                    <v-icon>mdi-email</v-icon>
-                  </v-btn>
-
                 </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
@@ -106,7 +153,8 @@
       <v-card-text>
         <PdfViewer
           :application="application"
-          @pdf_stamped="get_application()"/>
+          @pdf_stamped="get_application()"
+          @reject="reject_application()"/>
       </v-card-text>
 
 
@@ -133,6 +181,7 @@
     },
     data(){
       return {
+        help_dialog: false,
         application: null,
       }
     },
@@ -179,6 +228,10 @@
       },
       format_date_neo4j(date){
         return `${date.year}/${date.month}/${date.day}`
+      },
+      email_button_clicked(){
+        if(this.current_recipient) this.send_email_to_recipient(this.current_recipient)
+        else this.send_email_to_recipient()
       },
 
       send_email_to_recipient (recipient) {
@@ -242,6 +295,38 @@
         .sort((a, b) => a.submission.properties.flow_index - b.submission.properties.flow_index)
         .find(recipient => !recipient.approval && !recipient.refusal)
       },
+      user_as_recipient(){
+        const user =  this.$store.state.current_user
+        return this.application.recipients.find(recipient => recipient.identity === user.identity)
+      },
+      show_email_button(){
+
+        // This seems overly complicated
+
+        // If last person in flow and no current recipient (email to recipient)
+        // If user is applicant and current recipient exists
+        // User is recipient and current recipient is one flow index above user
+
+        const ordered_recipients = this.application.recipients
+        .slice()
+        .sort((a, b) => a.submission.properties.flow_index - b.submission.properties.flow_index)
+        const last_recipient = ordered_recipients[this.application.recipients.length-1]
+
+        const user_as_recipient = this.user_as_recipient
+        let user_is_previous_recipient = false
+        if(user_as_recipient && this.current_recipient) {
+          if(user_as_recipient.submission.properties.flow_index === this.current_recipient.submission.properties.flow_index -1) {
+            user_is_previous_recipient = true
+          }
+        }
+
+        const user_is_last_recipient = last_recipient.identity === this.$store.state.current_user.identity
+        const user_is_applicant = this.application.applicant.identity === this.$store.state.current_user.identity
+
+        return (user_is_last_recipient && !this.current_recipient)
+          || (user_is_applicant && !!this.current_recipient)
+          || user_is_previous_recipient
+      }
 
 
     }

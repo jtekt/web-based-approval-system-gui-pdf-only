@@ -108,7 +108,7 @@
 
 
     <v-card-subtitle class="mt-2 text-h6">
-      ③ 申請書提出 / Submission
+      ③ 承認手続き / Submission
     </v-card-subtitle>
 
     <v-card-text>
@@ -118,7 +118,7 @@
         @click="submit()"
         :disabled="!application_valid">
         <v-icon>mdi-send</v-icon>
-        <span>提出 / Submit</span>
+        <span>次へ / Submit</span>
 
       </v-btn>
     </v-card-text>

@@ -2,27 +2,85 @@
 
   <v-card>
     <v-toolbar
-      flat
-      class="text-center">
-      <v-spacer></v-spacer>
+      flat>
+
       <v-btn
         @click="previous_page()"
         :disabled="page_number <= 0"
         icon>
         <v-icon>mdi-arrow-left</v-icon>
       </v-btn>
-      <v-btn
-        @click="download_pdf()"
-        icon>
-        <v-icon>mdi-download</v-icon>
-      </v-btn>
+      <v-menu
+        open-on-hover
+        offset-y>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            text
+            v-bind="attrs"
+            v-on="on">
+            {{page_number +1}}/{{page_count}}
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item
+            v-for="page in Array.from(Array(page_count).keys())"
+            :key="page"
+            @click="page_number = page">
+            <v-list-item-title>{{ page+1 }}</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
       <v-btn
         @click="next_page()"
         :disabled="(page_number+1) >= page_count"
         icon>
         <v-icon>mdi-arrow-right</v-icon>
       </v-btn>
+
       <v-spacer></v-spacer>
+
+      <v-menu
+        v-if="current_recipient_is_current_user"
+        :close-on-content-click="false"
+        open-on-hover
+        offset-y
+        z-index="3">
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            class="mr-2"
+            v-bind="attrs"
+            v-on="on">
+            ハンコサイズ / Stamp size
+          </v-btn>
+        </template>
+
+        <v-card>
+          <v-card-text>
+            <v-slider
+              v-model.number="hanko_scale"
+              min="0.01"
+              max="0.1"
+              step="0.005"/>
+          </v-card-text>
+        </v-card>
+
+      </v-menu>
+
+      <v-btn
+        v-if="current_recipient_is_current_user"
+        dark
+        class="mr-2"
+        color="#c00000"
+        @click="$emit('reject')">
+        <v-icon>mdi-close</v-icon>
+        <span>却下 / Reject</span>
+      </v-btn>
+
+
+      <v-btn @click="download_pdf()">
+        <v-icon>mdi-download</v-icon>
+        <span>ダウンロード / Download</span>
+      </v-btn>
 
 
     </v-toolbar>
