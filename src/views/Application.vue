@@ -269,7 +269,7 @@
       },
       email_button_clicked(){
         if(this.current_recipient) this.send_email_to_recipient(this.current_recipient)
-        else this.send_email_to_recipient()
+        else this.send_email_to_applicant()
       },
 
       send_email_to_recipient (recipient) {
