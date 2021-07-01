@@ -241,7 +241,6 @@
         const url = `${process.env.VUE_APP_SHINSEI_MANAGER_URL}/v2/applications/${this.application_id}`
         this.axios.get(url)
         .then(({data}) => {
-          console.log(data)
           this.application = data
           this.application.properties.form_data = JSON.parse(this.application.properties.form_data)
         })

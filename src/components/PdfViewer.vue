@@ -107,7 +107,7 @@
 
         <!-- Indicator of where the hanko will be set -->
         <div
-          v-if="current_recipient_is_current_user"
+          v-if="current_user_as_recipient"
           :style="new_hanko.style"
           class="new_hanko"/>
 
@@ -233,8 +233,12 @@ export default {
 
 
     async pdf_clicked (event) {
-      // Draw a hanko where the user has clicked if the user has approved the application
-      if(!this.current_recipient_is_current_user) return
+
+      const current_user_as_recipient = this.current_user_as_recipient
+
+
+      if(!current_user_as_recipient) return
+
       if (!confirm(`Apply Hanko here?`)) return
 
       const pages = this.pdfDoc.getPages()
@@ -249,7 +253,7 @@ export default {
       const click_y = event.offsetY || event.layerY
       const position_y = height - (height * (click_y / wrapper_height))
 
-      const attachment_hankos = [{
+      const new_hanko = {
         file_id: this.file_id,
         page_number: this.page_number,
         position: {
@@ -257,11 +261,25 @@ export default {
           y: position_y
         },
         scale: this.hanko_scale
-      }]
+      }
 
+      const approval = current_user_as_recipient.approval
+      if(!approval) return this.approve_application({attachment_hankos: [new_hanko]})
+
+      let attachment_hankos = approval.properties.attachment_hankos
+      if(!attachment_hankos) attachment_hankos = []
+      if (typeof attachment_hankos === 'string') {
+        attachment_hankos = JSON.parse(attachment_hankos)
+      }
+      attachment_hankos.push(new_hanko)
+
+      this.update_hankos(approval.identity, {attachment_hankos})
+
+    },
+
+    approve_application(body){
       const url = `${process.env.VUE_APP_SHINSEI_MANAGER_URL}/applications/${this.application.identity}/approve`
-
-      this.axios.post(url, {attachment_hankos})
+      this.axios.post(url, body)
       .then(() => {
         this.$emit('pdf_stamped')
       })
@@ -269,8 +287,19 @@ export default {
         console.error(error)
         alert(`Error approving application`)
       })
+    },
 
+    update_hankos(approval_id, body){
+      const url = `${process.env.VUE_APP_SHINSEI_MANAGER_URL}/approvals/${approval_id}/attachment_hankos`
 
+      this.axios.put(url, body)
+      .then(() => {
+        this.$emit('pdf_stamped')
+      })
+      .catch((error) => {
+        console.log(error)
+        alert(`Error approving application`)
+      })
     },
 
     refresh_pdf () {
@@ -295,32 +324,6 @@ export default {
       this.new_hanko.style = { visibility: 'none' }
     },
 
-    svg_to_png_url (svg) {
-      return new Promise( (resolve) => {
-
-        const serializer = new XMLSerializer()
-        const SVG_sata = serializer.serializeToString(svg)
-
-        const canvas = document.createElement('canvas')
-        canvas.width = 1000
-        canvas.height = 1500
-
-        const ctx = canvas.getContext('2d');
-
-
-
-        let v = canvg.fromString(ctx, SVG_sata);
-        v.start();
-
-        const png_URL = canvas
-          .toDataURL('image/png')
-          .replace('image/png', 'image/octet-stream')
-
-        resolve(png_URL)
-
-      })
-    },
-
     get_hanko_blob_url_from_id(hanko_dom_id){
       const hanko_svg = document.getElementById(hanko_dom_id)
 
@@ -340,7 +343,7 @@ export default {
 
     load_pdf_hankos () {
 
-      const approval_promises = []
+      const promises = []
 
       this.application.recipients
       .filter(recipient => !!recipient.approval)
@@ -349,11 +352,11 @@ export default {
 
         const promise = new Promise( (resolve, reject) => {
 
-          if (!approval.properties.attachment_hankos) return
+          // Do nothing if there no hanko to draw for the current approval
+          let hankos = approval.properties.attachment_hankos
+          if (!hankos) return
 
-          if (typeof approval.properties.attachment_hankos === 'string') {
-            approval.properties.attachment_hankos = JSON.parse(approval.properties.attachment_hankos)
-          }
+          if (typeof hankos === 'string') hankos = JSON.parse(hankos)
 
           const png_url = this.get_hanko_blob_url_from_id(`hanko_${approval.identity}`)
 
@@ -366,7 +369,7 @@ export default {
 
             const pages = this.pdfDoc.getPages()
 
-            approval.properties.attachment_hankos.forEach( hanko => {
+            hankos.forEach( hanko => {
 
               // Skip if hanko is not part of the current file
               if (hanko.file_id !== this.file_id) return
@@ -393,14 +396,13 @@ export default {
           .catch(reject)
         })
 
-        approval_promises.push(promise)
+        promises.push(promise)
       })
 
       // render .pdf once all hankos of all approvals have been drawn
-      Promise.all(approval_promises)
-      .then(async () => {
-        this.shown_pdf = await this.pdfDoc.save()
-      })
+      Promise.all(promises)
+      .then(() =>  this.pdfDoc.save())
+      .then( (saved_pdf) => { this.shown_pdf = saved_pdf} )
       .catch(error => {
         console.error(error)
       })
@@ -410,7 +412,7 @@ export default {
       const pdf_blob = new Blob([this.shown_pdf], { type: 'application/pdf' })
 
       if (window.navigator.msSaveOrOpenBlob) {
-        window.navigator.msSaveBlob(pdf_blob, `${this.selected_file_id}.pdf`)
+        window.navigator.msSaveBlob(pdf_blob, `${this.file_id}.pdf`)
       }
       else {
         const elem = window.document.createElement('a')
@@ -441,6 +443,10 @@ export default {
     current_recipient_is_current_user(){
       if(!this.current_recipient) return false
       return this.current_recipient.identity === this.$store.state.current_user.identity
+    },
+    current_user_as_recipient(){
+      const current_user = this.$store.state.current_user
+      return this.application.recipients.find(recipient => recipient.identity === current_user.identity)
     }
 
   }
