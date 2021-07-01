@@ -456,10 +456,11 @@ export default {
     application_id(){
       return this.application.identity
     },
+    application_has_refusal(){
+      return this.application.recipients.find(recipient => recipient.refusal)
+    },
     current_recipient(){
       // recipients sorted by flow index apparently
-
-      if(this.application.recipients.find(recipient => recipient.refusal)) return null
 
       return this.application.recipients
       .slice()
@@ -476,9 +477,21 @@ export default {
     },
 
     current_user_can_stamp(){
+
+      /*
+      Application can be stamped if:
+      - User is recipient
+      - The application has not been rejectred by anyone
+      - it's user's flow index or above
+      */
+
       if(!this.current_user_as_recipient) return false
-      if(!this.current_recipient) return false
-      const current_flow_index = this.current_recipient.submission.properties.flow_index
+      if(this.application_has_refusal) return false
+
+      const current_flow_index = this.current_recipient
+        ? this.current_recipient.submission.properties.flow_index
+        : this.application.recipients.length
+
       const current_user_flow_index = this.current_user_as_recipient.submission.properties.flow_index
       return current_user_flow_index <= current_flow_index
     }
