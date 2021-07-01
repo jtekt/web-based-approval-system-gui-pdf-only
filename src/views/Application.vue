@@ -344,6 +344,7 @@
       current_recipient(){
         // recipients sorted by flow index apparently
         if(this.application.recipients.find(recipient => recipient.refusal)) return null
+        
         return this.application.recipients
         .slice()
         .sort((a, b) => a.submission.properties.flow_index - b.submission.properties.flow_index)
