@@ -142,7 +142,7 @@
             <div class="approval_flow" >
 
               <template
-                v-if="!current_recipient" >
+                v-if="!!user_as_recipient && !current_recipient" >
 
                 <div class="flow_applicant">
 
@@ -175,7 +175,7 @@
                 <WebHankoContainer
                   :key="`recipient_${index}`"
                   :recipient="recipient"
-                  :current_recipient="current_recipient"
+                  :application="application"
                   @send_email="send_email_to_recipient(recipient)"
                   @reject="reject_application()"/>
               </template>

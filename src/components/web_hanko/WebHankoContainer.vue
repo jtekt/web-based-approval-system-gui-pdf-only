@@ -27,7 +27,7 @@
         v-else-if="recipient.refusal">mdi-close-circle</v-icon>
 
       <EmailButton
-        v-else-if="recipient_is_current_recipient"
+        v-else-if="recipient_is_current_recipient && (user_is_applicant || user_as_recipient)"
         :user="recipient"
         @send_email="$emit('send_email')" />
 
@@ -53,7 +53,7 @@ export default {
   },
   props: {
     recipient: { type: Object, required: true },
-    current_recipient: Object,
+    application: Object,
   },
   data () {
     return {
@@ -64,9 +64,15 @@ export default {
 
   },
   computed: {
-    current_user_id() {
-      return this.$store.state.current_user.identity
+    current_recipient(){
+      // recipients sorted by flow index apparently
+      if(this.application.recipients.find(recipient => recipient.refusal)) return null
+      return this.application.recipients
+      .slice()
+      .sort((a, b) => a.submission.properties.flow_index - b.submission.properties.flow_index)
+      .find(recipient => !recipient.approval && !recipient.refusal)
     },
+
     show_toolbox () {
       // If the user is a recipient that has not approved or rejected the application and also is next recipient
       return this.user_is_recipient &&
@@ -81,12 +87,15 @@ export default {
     user_profile_url () {
       return `${process.env.VUE_APP_EMPLOYEE_MANAGER_FRONT_URL}/users/${this.recipient.identity}`
     },
-    user_is_applicant () {
-      return this.current_user_id === this.applicant.identity
+    current_user_id() {
+      return this.$store.state.current_user.identity
     },
-    user_is_recipient () {
-      return this.current_user_id === this.recipient.identity
-    }
+    user_is_applicant () {
+      return this.current_user_id === this.application.applicant.identity
+    },
+    user_as_recipient(){
+      return this.application.recipients.find(recipient => recipient.identity === this.current_user_id)
+    },
   }
 }
 </script>
