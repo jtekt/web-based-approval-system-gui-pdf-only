@@ -135,11 +135,11 @@
 
     </template>
 
-    <div
-      class="loader_wrapper"
-      v-if="!shown_pdf && !load_error">
-      Loading PDF
-    </div>
+    <v-progress-linear
+      v-if="loading"
+      indeterminate>
+    </v-progress-linear>
+
 
     <div
       v-if="load_error"
@@ -220,6 +220,8 @@ export default {
         alert('Internet Explorerのユーザーはこの機能に値しません、今の時代のブラウザを使ってください。')
         return
       }
+
+      this.loading = true
 
       // reset the file
       this.shown_pdf = null
@@ -426,6 +428,7 @@ export default {
       .catch(error => {
         console.error(error)
       })
+      .finally(() => {this.loading = false})
     },
 
     download_pdf () {
@@ -471,6 +474,7 @@ export default {
 
     current_user_can_stamp(){
       if(!this.current_user_as_recipient) return false
+      if(!this.current_recipient) return false
       const current_flow_index = this.current_recipient.submission.properties.flow_index
       const current_user_flow_index = this.current_user_as_recipient.submission.properties.flow_index
       return current_user_flow_index <= current_flow_index
@@ -505,17 +509,7 @@ export default {
 }
 
 
-.loader_wrapper {
-  text-align: center;
-}
 
-.hanko_size_wrapper {
-  display: flex;
-  align-items: center;
-}
 
-.hanko_size_wrapper label {
-  margin-right: 0.5em;
-}
 
 </style>
