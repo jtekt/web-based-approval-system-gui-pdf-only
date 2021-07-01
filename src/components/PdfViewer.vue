@@ -56,7 +56,7 @@
       <v-spacer></v-spacer>
 
       <v-menu
-        v-if="current_user_as_recipient"
+        v-if="current_user_can_stamp"
         :close-on-content-click="false"
         open-on-hover
         offset-y
