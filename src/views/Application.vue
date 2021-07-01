@@ -282,46 +282,54 @@
 
       send_email_to_recipient (recipient) {
         // Weird formatting because preserves indentation
-        window.location.href = `
-  mailto:${recipient.properties.email_address}
-  ?subject=[申請マネージャ] ${this.application.properties.type}
-  &body=${recipient.properties.display_name} 様 %0D%0A
-  %0D%0A
-  申請マネージャーの通知メールです。 %0D%0A
-  %0D%0A
-  申請を提出しました。 %0D%0A
-  %0D%0A
-  申請者: ${this.application.applicant.properties.display_name} %0D%0A
-  タイプ: ${this.application.properties.type} %0D%0A
-  タイトル: ${this.application.properties.title} %0D%0A
-  提出先URL: ${window.location.origin}/applications/${this.application.identity} %0D%0A
-  %0D%0A
-  ※IEでは動作しません。Edge (Chromium)/Firefox/GoogleChromeをご使用ください。　%0D%0A
-  ※詳しくは ${window.location.origin}/info%0D%0A
-  %0D%0A
-  確認お願いします。%0D%0A
-  %0D%0A`
+
+        const email_body = `${recipient.properties.display_name} 様
+
+申請マネージャーの通知メールです。
+
+申請を提出しました。
+
+申請者: ${this.application.applicant.properties.display_name}
+タイプ: ${this.application.properties.type}
+タイトル: ${this.application.properties.title}
+提出先URL: ${window.location.origin}/applications/${this.application.identity}
+
+※IEでは動作しません。Edge (Chromium)/Firefox/GoogleChromeをご使用ください。　
+※詳しくは ${window.location.origin}/info
+
+確認お願いします。`
+
+      const email_string = `mailto:${recipient.properties.email_address}
+?subject=[申請マネージャ] ${this.application.properties.type}
+&body=${encodeURIComponent(email_body)}`
+
+        window.location.href = email_string
+
       },
       send_email_to_applicant () {
         // Weird formatting because preserves indentation
-        // TODO: Stop relying on name_kanji
-        window.location.href = `
-  mailto:${this.application.applicant.properties.email_address}
+
+        const email_body = `${this.application.applicant.properties.display_name} 様
+
+申請マネージャーの通知メールです。
+
+申請の承認が完了されました。
+
+申請者: ${this.application.applicant.properties.display_name}
+タイプ: ${this.application.properties.type}
+タイトル: ${this.application.properties.title}
+提出先URL: ${window.location.origin}/applications/${this.application.identity}
+
+※IEでは動作しません。Edge (Chromium)/Firefox/GoogleChromeをご使用ください。
+※詳しくは ${window.location.origin}/info
+
+確認お願いします。`
+
+        const email_string = `mailto:${this.application.applicant.properties.email_address}
   ?subject=[申請マネージャ] ${this.application.properties.type}
-  &body=${this.application.applicant.properties.display_name} 様 %0D%0A
-  %0D%0A
-  申請マネージャーの通知メールです。 %0D%0A
-  %0D%0A
-  タイプ: ${this.application.properties.type} %0D%0A
-  タイトル: ${this.application.properties.title} %0D%0A
-  提出先URL: ${window.location.origin}/applications/${this.application.identity} %0D%0A
-  %0D%0A
-  ※IEでは動作しません。Edge (Chromium)/Firefox/GoogleChromeをご使用ください。　%0D%0A
-  ※詳しくは ${window.location.origin}/info%0D%0A
-  %0D%0A
-  確認お願いします。%0D%0A
-  %0D%0A
-          `
+  &body=${encodeURIComponent(email_body)}`
+
+        window.location.href = email_string
       },
     },
     computed: {
@@ -345,36 +353,6 @@
         const user =  this.$store.state.current_user
         return this.application.recipients.find(recipient => recipient.identity === user.identity)
       },
-      show_email_button(){
-
-        // Move this to webhanko container
-
-        // This seems overly complicated
-
-        // If last person in flow and no current recipient (email to recipient)
-        // If user is applicant and current recipient exists
-        // User is recipient and current recipient is one flow index above user
-
-        const ordered_recipients = this.application.recipients
-        .slice()
-        .sort((a, b) => a.submission.properties.flow_index - b.submission.properties.flow_index)
-        const last_recipient = ordered_recipients[this.application.recipients.length-1]
-
-        const user_as_recipient = this.user_as_recipient
-        let user_is_previous_recipient = false
-        if(user_as_recipient && this.current_recipient) {
-          if(user_as_recipient.submission.properties.flow_index === this.current_recipient.submission.properties.flow_index -1) {
-            user_is_previous_recipient = true
-          }
-        }
-
-        const user_is_last_recipient = last_recipient.identity === this.$store.state.current_user.identity
-        const user_is_applicant = this.application.applicant.identity === this.$store.state.current_user.identity
-
-        return (user_is_last_recipient && !this.current_recipient)
-          || (user_is_applicant && !!this.current_recipient)
-          || user_is_previous_recipient
-      }
 
 
     }
