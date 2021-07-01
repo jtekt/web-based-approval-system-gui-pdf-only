@@ -11,18 +11,18 @@
 
         <v-spacer></v-spacer>
 
+
         <v-dialog
           v-model="help_dialog"
           width="800">
 
           <template v-slot:activator="{ on, attrs }">
             <v-btn
-              class="mr-2"
+              text
               v-bind="attrs"
               v-on="on">
               <v-icon>mdi-information</v-icon>
               <span>Help</span>
-
             </v-btn>
           </template>
 
@@ -79,49 +79,21 @@
           </v-card>
         </v-dialog>
 
-
         <v-btn
-          v-if="show_email_button"
-          class="mr-2"
-          @click="email_button_clicked()">
-          <v-icon>mdi-email</v-icon>
-          <span>メール作成 / Send email</span>
-        </v-btn>
-
-
-
-
-        <v-btn
-          class="mr-2"
+          text
           @click="$router.push({ name: 'new_application', query: { copy_of: application.identity } })">
           <v-icon>mdi-restore</v-icon>
           <span>再申請 / Re-submit</span>
         </v-btn>
 
-        <!-- <v-btn
-          dark
-          class="mr-2"
-          color="#c00000"
-          @click="reject_application()">
-          <v-icon>mdi-close</v-icon>
-          <span>却下 / Reject</span>
-        </v-btn> -->
 
-        <v-tooltip bottom>
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn
-            v-bind="attrs"
-            v-on="on"
-            dark
-            class="mr-2"
-            color="#c00000"
-            @click="delete_application()">
-            <v-icon>mdi-delete</v-icon>
-            <span>申請削除 / Delete</span>
-          </v-btn>
-        </template>
-        <span>申請削除 / Delete</span>
-      </v-tooltip>
+        <v-btn
+          text
+          color="#c00000"
+          @click="delete_application()">
+          <v-icon>mdi-delete</v-icon>
+          <span>申請削除 / Delete</span>
+        </v-btn>
 
 
 
@@ -168,6 +140,29 @@
           <v-col>
 
             <div class="approval_flow" >
+
+              <template
+                v-if="!current_recipient" >
+
+                <div class="flow_applicant">
+
+                  <EmailButton
+                    :user="application.applicant"
+                    @send_email="send_email_to_applicant()" />
+
+
+                </div>
+
+
+
+                <div>
+                  <v-icon class="mt-16">mdi-arrow-left</v-icon>
+                </div>
+
+
+
+              </template>
+
               <template
                 v-for="(recipient, index) in ordered_recipients" >
 
@@ -184,6 +179,10 @@
                   @send_email="send_email_to_recipient(recipient)"
                   @reject="reject_application()"/>
               </template>
+
+
+
+
             </div>
 
             <RecipientComments
@@ -213,8 +212,7 @@
 <script>
 
   import WebHankoContainer from '@/components/web_hanko/WebHankoContainer.vue'
-
-
+  import EmailButton from '@/components/EmailButton.vue'
   import PdfViewer from '@/components/PdfViewer.vue'
   import RecipientComments from '@/components/RecipientComments.vue'
 
@@ -225,6 +223,7 @@
       WebHankoContainer,
       PdfViewer,
       RecipientComments,
+      EmailButton,
     },
     data(){
       return {
@@ -348,6 +347,8 @@
       },
       show_email_button(){
 
+        // Move this to webhanko container
+
         // This seems overly complicated
 
         // If last person in flow and no current recipient (email to recipient)
@@ -393,4 +394,16 @@
 .comments{
   margin-top: 3em;
 }
+
+.flow_applicant{
+  width: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 150px;
+}
+
+
+
+
 </style>

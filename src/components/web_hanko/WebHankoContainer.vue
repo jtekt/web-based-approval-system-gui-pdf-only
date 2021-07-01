@@ -26,21 +26,13 @@
         x-large
         v-else-if="recipient.refusal">mdi-close-circle</v-icon>
 
-      <!-- <v-btn
-        icon
-        color="#c00000"
-        v-else-if="recipient_is_current_recipient && user_is_recipient"
-        @click="$emit('reject')">
-        <v-icon x-large>mdi-close</v-icon>
-      </v-btn> -->
-
-
-      <!-- <v-btn
-        icon
+      <EmailButton
         v-else-if="recipient_is_current_recipient"
-        @click="$emit('send_email')">
-        <v-icon>mdi-email</v-icon>
-      </v-btn> -->
+        :user="recipient"
+        @send_email="$emit('send_email')" />
+
+
+
 
     </div>
 
@@ -51,11 +43,13 @@
 
 <script>
 import WebHanko from './WebHanko.vue'
+import EmailButton from '@/components/EmailButton.vue'
 
 export default {
   name: 'WebHankoContainer',
   components: {
     WebHanko,
+    EmailButton,
   },
   props: {
     recipient: { type: Object, required: true },
@@ -160,38 +154,12 @@ export default {
   align-items: stretch;
 }
 
-.toolbox .approval_control {
-  flex-grow: 1;
 
-  font-size: 120%;
-  padding: 2px;
-
+.email_button_content{
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-
-  cursor: pointer;
-
-  border-radius: 5px;
-
-  transition: color 0.25s, background-color 0.25s;
-}
-
-.approve_button{
-  color: #2b8f30aa;
-}
-
-.disapprove_button, .cancel_button{
-  color: #c00000;
-}
-.approve_button:hover{
-  background-color: #2b8f30;
-  color: white;
-}
-
-.disapprove_button:hover, .cancel_button:hover{
-  background-color: #c00000;
-  color: white;
+  justify-content: center;
 }
 
 </style>

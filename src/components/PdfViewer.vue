@@ -4,6 +4,22 @@
     <v-toolbar
       flat>
 
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on, attrs }">
+
+            <span
+              v-bind="attrs"
+              v-on="on">
+              ① PDFにハンコを押す
+            </span>
+            <!-- <span>申請削除 / Delete</span> -->
+        </template>
+        <span>ハンコを押したい所をクリックしてください</span>
+      </v-tooltip>
+
+
+      <v-spacer></v-spacer>
+
       <v-btn
         @click="previous_page()"
         :disabled="page_number <= 0"
@@ -40,17 +56,20 @@
       <v-spacer></v-spacer>
 
       <v-menu
-        v-if="current_recipient_is_current_user"
+        v-if="current_user_as_recipient"
         :close-on-content-click="false"
         open-on-hover
         offset-y
         z-index="3">
         <template v-slot:activator="{ on, attrs }">
           <v-btn
+            text
             class="mr-2"
             v-bind="attrs"
             v-on="on">
-            ハンコサイズ / Stamp size
+            <v-icon>mdi-resize</v-icon>
+            <span>ハンコサイズ / Stamp size</span>
+
           </v-btn>
         </template>
 
@@ -68,8 +87,7 @@
 
       <v-btn
         v-if="current_recipient_is_current_user"
-        dark
-        class="mr-2"
+        text
         color="#c00000"
         @click="$emit('reject')">
         <v-icon>mdi-close</v-icon>
@@ -77,7 +95,9 @@
       </v-btn>
 
 
-      <v-btn @click="download_pdf()">
+      <v-btn
+        text
+        @click="download_pdf()">
         <v-icon>mdi-download</v-icon>
         <span>ダウンロード / Download</span>
       </v-btn>
@@ -107,7 +127,7 @@
 
         <!-- Indicator of where the hanko will be set -->
         <div
-          v-if="current_user_as_recipient"
+          v-if="current_user_can_stamp"
           :style="new_hanko.style"
           class="new_hanko"/>
 
@@ -234,10 +254,9 @@ export default {
 
     async pdf_clicked (event) {
 
-      const current_user_as_recipient = this.current_user_as_recipient
 
 
-      if(!current_user_as_recipient) return
+      if(!this.current_user_can_stamp) return
 
       if (!confirm(`Apply Hanko here?`)) return
 
@@ -263,6 +282,7 @@ export default {
         scale: this.hanko_scale
       }
 
+      const current_user_as_recipient = this.current_user_as_recipient
       const approval = current_user_as_recipient.approval
       if(!approval) return this.approve_application({attachment_hankos: [new_hanko]})
 
@@ -447,6 +467,13 @@ export default {
     current_user_as_recipient(){
       const current_user = this.$store.state.current_user
       return this.application.recipients.find(recipient => recipient.identity === current_user.identity)
+    },
+
+    current_user_can_stamp(){
+      if(!this.current_user_as_recipient) return false
+      const current_flow_index = this.current_recipient.submission.properties.flow_index
+      const current_user_flow_index = this.current_user_as_recipient.submission.properties.flow_index
+      return current_user_flow_index <= current_flow_index
     }
 
   }
