@@ -174,6 +174,7 @@ export default {
         type: 'PDF',
         form_data: this.form_data,
         recipients_ids: this.recipients.map( recipient => recipient.identity),
+        private: true, // A bit dangerous
       }
 
 
