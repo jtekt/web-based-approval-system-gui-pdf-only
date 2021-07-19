@@ -1,8 +1,7 @@
 <template>
 
-  <v-card>
-    <v-toolbar
-      flat>
+  <v-card outlined>
+    <v-toolbar flat>
 
       <v-tooltip bottom>
         <template v-slot:activator="{ on, attrs }">
@@ -18,7 +17,7 @@
       </v-tooltip>
 
 
-      <v-spacer></v-spacer>
+      <v-spacer/>
 
       <v-btn
         @click="previous_page()"
@@ -53,7 +52,7 @@
         <v-icon>mdi-arrow-right</v-icon>
       </v-btn>
 
-      <v-spacer></v-spacer>
+      <v-spacer/>
 
       <v-menu
         v-if="current_user_can_stamp"
@@ -74,13 +73,15 @@
         </template>
 
         <v-card>
-          <v-card-text>
+          <v-sheet class='pt-16 px-5'>
             <v-slider
-              v-model.number="hanko_scale"
-              min="0.01"
-              max="0.1"
-              step="0.005"/>
-          </v-card-text>
+              v-model.number="hanko_scale_slider_value"
+              min="1"
+              max="100"
+              step="5"
+              thumb-label="always"/>
+          </v-sheet>
+
         </v-card>
 
       </v-menu>
@@ -104,7 +105,7 @@
 
 
     </v-toolbar>
-    <v-divider></v-divider>
+    <v-divider/>
 
     <template v-if="shown_pdf">
 
@@ -186,7 +187,8 @@ export default {
         }
       },
 
-      hanko_scale: 0.034
+      hanko_scale_slider_value: 35
+      //hanko_scale: 0.035
 
     }
   },
@@ -330,15 +332,24 @@ export default {
     },
 
     update_new_hanko_position (event) {
-      const wrapper_width = this.$refs.pdf_container.offsetWidth
+
+      // Getting the size of the page
+      //const wrapper_width = this.$refs.pdf_container.offsetWidth
       const wrapper_height = this.$refs.pdf_container.offsetHeight
-      const scaling = 1.735 * this.hanko_scale
+
+      const pages = this.pdfDoc.getPages()
+      const page = pages[this.page_number]
+      const {height: page_height } = page.getSize()
+
+
+      const hanko_height = 1500 * this.hanko_scale * wrapper_height / page_height
+
 
       this.new_hanko.style = {
         left: `calc(${event.offsetX}px - 0.5 * ${this.new_hanko.style.width})`,
         top: `calc(${event.offsetY}px - 0.5 * ${this.new_hanko.style.height})`,
-        width: `${scaling * wrapper_width}px`,
-        height: `${scaling * wrapper_height}px`
+        height: `${hanko_height}px`,
+        width: `${0.75 * hanko_height}px`,
       }
     },
 
@@ -494,6 +505,9 @@ export default {
 
       const current_user_flow_index = this.current_user_as_recipient.submission.properties.flow_index
       return current_user_flow_index <= current_flow_index
+    },
+    hanko_scale(){
+      return this.hanko_scale_slider_value / 1000
     }
 
   }
