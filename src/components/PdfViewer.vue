@@ -350,6 +350,8 @@ export default {
         top: `calc(${event.offsetY}px - 0.5 * ${this.new_hanko.style.height})`,
         height: `${hanko_height}px`,
         width: `${0.75 * hanko_height}px`,
+        'border-radius': `${0.1 * hanko_height}px`,
+        'border-width': `${0.03 * hanko_height}px`
       }
     },
 
@@ -525,7 +527,7 @@ export default {
 
   z-index: 2;
   border: 3px solid #c00000;
-  border-radius: 10px;
+
 }
 
 .new_hanko_overlay {
