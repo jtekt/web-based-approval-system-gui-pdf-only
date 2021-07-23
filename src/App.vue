@@ -39,7 +39,7 @@ export default {
     options: {
       title: "申請マネージャー（PDF専用GUI）",
       authenticate: true,
-      skip_greetings: true,
+      skip_greetings: process.env.NODE_ENV === 'development',
       login_url: `${process.env.VUE_APP_AUTHENTICATION_API_URL}/login`,
       identification_url: `${process.env.VUE_APP_AUTHENTICATION_API_URL}/v2/whoami`,
     },
