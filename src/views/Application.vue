@@ -133,7 +133,6 @@
             </v-list-item>
 
 
-
           </v-col>
 
           <!-- Approval flow -->
@@ -313,7 +312,7 @@
 
 申請マネージャーの通知メールです。
 
-申請の承認が完了されました。
+申請の承認が${this.application_is_rejected ? '却下' : '完了'}されました。
 
 申請者: ${this.application.applicant.properties.display_name}
 タイプ: ${this.application.properties.type}
@@ -344,7 +343,7 @@
       current_recipient(){
         // recipients sorted by flow index apparently
         if(this.application.recipients.find(recipient => recipient.refusal)) return null
-        
+
         return this.application.recipients
         .slice()
         .sort((a, b) => a.submission.properties.flow_index - b.submission.properties.flow_index)
@@ -353,6 +352,9 @@
       user_as_recipient(){
         const user =  this.$store.state.current_user
         return this.application.recipients.find(recipient => recipient.identity === user.identity)
+      },
+      application_is_rejected(){
+        return !!this.application.recipients.find(recipient => recipient.refusal)
       },
 
 
