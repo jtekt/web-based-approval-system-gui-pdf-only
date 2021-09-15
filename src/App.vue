@@ -42,6 +42,8 @@ export default {
       skip_greetings: process.env.NODE_ENV === 'development',
       login_url: `${process.env.VUE_APP_AUTHENTICATION_API_URL}/login`,
       identification_url: `${process.env.VUE_APP_AUTHENTICATION_API_URL}/v2/whoami`,
+      main_class: 'grey lighten-4',
+      footer_color: 'grey lighten-4',
     },
     nav: [
       {title: '新規作成 / New', to: {name: 'new_application'}, icon: 'mdi-plus'},
