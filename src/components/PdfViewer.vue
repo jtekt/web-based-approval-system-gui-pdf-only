@@ -201,9 +201,6 @@ export default {
     file_id () {
       this.view_pdf(this.file_id)
     },
-    approvals () {
-      this.view_pdf(this.file_id)
-    }
   },
   methods: {
     page_count_event (page_count) {
@@ -258,10 +255,7 @@ export default {
 
     async pdf_clicked (event) {
 
-
-
       if(!this.current_user_can_stamp) return
-
       if (!confirm(`Apply Hanko here?`)) return
 
       const pages = this.pdfDoc.getPages()
@@ -389,7 +383,7 @@ export default {
 
           // Do nothing if there no hanko to draw for the current approval
           let hankos = approval.properties.attachment_hankos
-          if (!hankos) return
+          if (!hankos) return resolve()
 
           if (typeof hankos === 'string') hankos = JSON.parse(hankos)
 
@@ -407,7 +401,7 @@ export default {
             hankos.forEach( hanko => {
 
               // Skip if hanko is not part of the current file
-              if (hanko.file_id !== this.file_id) return
+              if (hanko.file_id !== this.file_id) return resolve()
 
               const page = pages[hanko.page_number]
 
@@ -463,6 +457,7 @@ export default {
   },
   computed: {
     file_id(){
+      // Maybe not ideal
       const found_field = this.application.properties.form_data.find(field => field.type === "file")
       return found_field.value
     },

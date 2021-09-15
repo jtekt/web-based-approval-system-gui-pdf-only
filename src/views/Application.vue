@@ -11,7 +11,7 @@
 
         <v-spacer></v-spacer>
 
-
+        <!-- Help dialog -->
         <v-dialog
           v-model="help_dialog"
           width="800">
@@ -101,6 +101,7 @@
       </v-toolbar>
       <v-divider></v-divider>
 
+      <!-- Application info -->
       <v-card-text>
         <v-row>
 
@@ -144,15 +145,10 @@
                 v-if="!!user_as_recipient && !current_recipient" >
 
                 <div class="flow_applicant">
-
                   <EmailButton
                     :user="application.applicant"
                     @send_email="send_email_to_applicant()" />
-
-
                 </div>
-
-
 
                 <div>
                   <v-icon class="mt-16">mdi-arrow-left</v-icon>
@@ -260,7 +256,7 @@
         })
       },
       delete_application(){
-        if(!confirm("ホンマに？")) return
+        if(!confirm("本申請を削除致しますか？")) return
         const url = `${process.env.VUE_APP_SHINSEI_MANAGER_URL}/applications/${this.application_id}`
         this.axios.delete(url)
         .then( () => {
