@@ -115,8 +115,8 @@
         @click="pdf_clicked($event)">
 
         <pdf
+          :src="pdf_src"
           :page="page_number+1"
-          :src="shown_pdf"
           @num-pages="page_count_event"/>
 
         <!-- Used to react to mouse motion over the PDF -->
@@ -456,6 +456,17 @@ export default {
 
   },
   computed: {
+    pdf_src(){
+      const pdf_blob = new Blob([this.shown_pdf], { type: 'application/pdf' })
+
+      const src =  pdf.createLoadingTask({
+        url: window.URL.createObjectURL(pdf_blob),
+        cMapUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@2.5.207/cmaps/',
+        cMapPacked: true,
+      })
+
+      return src
+    },
     file_id(){
       // Maybe not ideal
       const found_field = this.application.properties.form_data.find(field => field.type === "file")
