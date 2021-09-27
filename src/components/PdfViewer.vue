@@ -469,7 +469,9 @@ export default {
     },
     file_id(){
       // Maybe not ideal
-      const found_field = this.application.properties.form_data.find(field => field.type === "file")
+      const found_field = this.application.properties.form_data.find(field => {
+        return field.type === "pdf" || field.type === "file"
+      })
       return found_field.value
     },
     application_id(){
@@ -482,9 +484,9 @@ export default {
       // recipients sorted by flow index apparently
 
       return this.application.recipients
-      .slice()
-      .sort((a, b) => a.submission.properties.flow_index - b.submission.properties.flow_index)
-      .find(recipient => !recipient.approval && !recipient.refusal)
+        .slice()
+        .sort((a, b) => a.submission.properties.flow_index - b.submission.properties.flow_index)
+        .find(recipient => !recipient.approval && !recipient.refusal)
     },
     current_recipient_is_current_user(){
       if(!this.current_recipient) return false
