@@ -146,7 +146,7 @@ export default {
     return {
       title: '',
       form_data: [
-        {type: 'file', label: 'file', value: null},
+        {type: 'pdf', label: 'file', value: null},
         {type: 'text', label: 'memo', value: ''},
       ],
       recipients: [],
