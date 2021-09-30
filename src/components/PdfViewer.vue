@@ -469,9 +469,8 @@ export default {
     },
     file_id(){
       // Maybe not ideal
-      const found_field = this.application.properties.form_data.find(field => {
-        return field.type === "pdf" || field.type === "file"
-      })
+      const found_field = this.application.properties.form_data
+        .find(field => field.type === "pdf" || field.type === "file")
       return found_field.value
     },
     application_id(){
