@@ -117,6 +117,7 @@
         <pdf
           :src="pdf_src"
           :page="page_number+1"
+          :rotate="rotation"
           @num-pages="page_count_event"/>
 
         <!-- Used to react to mouse motion over the PDF -->
@@ -176,6 +177,7 @@ export default {
 
       page_number: 0,
       page_count: 1,
+      rotation: 0,
 
       pdfDoc: null,
       shown_pdf: null,
@@ -201,6 +203,9 @@ export default {
     file_id () {
       this.view_pdf(this.file_id)
     },
+    page_number () {
+      this.set_pdf_rotation()
+    }
   },
   methods: {
     page_count_event (page_count) {
@@ -241,11 +246,19 @@ export default {
       })
 
     },
+    set_pdf_rotation(){
+      const pages = this.pdfDoc.getPages()
+      const current_page = pages[this.page_number]
+      const {angle} = current_page.getRotation()
+      this.rotation = - angle
+    },
     async load_pdf (buffer) {
       this.load_error = null
       try {
         this.pdfDoc = await PDFDocument.load(buffer)
-        //this.shown_pdf = await this.pdfDoc.save()
+
+        this.set_pdf_rotation()
+
         this.load_pdf_hankos()
       } catch (e) {
         this.load_error = `この機能は.pdfのファイルしかつかえません<br>This feature only supports .pdf files`
@@ -261,6 +274,8 @@ export default {
       const pages = this.pdfDoc.getPages()
       const page = pages[this.page_number]
       const { width, height } = page.getSize()
+
+
 
       const wrapper_width = this.$refs.pdf_container.offsetWidth
       const click_x = event.offsetX || event.layerX
@@ -398,12 +413,14 @@ export default {
 
             const pages = this.pdfDoc.getPages()
 
+
             hankos.forEach( hanko => {
 
               // Skip if hanko is not part of the current file
               if (hanko.file_id !== this.file_id) return resolve()
 
               const page = pages[hanko.page_number]
+
 
               // Currently, some hankos have no scale set so allow the scale to be modified using the slider in that case
               const pngDims = pngImage.scale(hanko.scale || this.hanko_scale)
