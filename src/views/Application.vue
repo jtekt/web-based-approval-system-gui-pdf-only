@@ -1,6 +1,7 @@
 <template>
   <v-card>
-    <template v-if="application">
+
+    <template v-if="application && !loading && !error">
 
       <v-toolbar
         flat>
@@ -138,6 +139,23 @@
 
     </template>
 
+    <v-card-text
+      v-if="loading"
+      class='text-center'>
+      <v-progress-circular
+        size="50"
+        indeterminate/>
+    </v-card-text>
+
+    <v-card-text
+      v-if="error"
+      style="white-space: pre-line; color: #c00000;"
+      class='text-center text-h6'>
+      {{error}}
+    </v-card-text>
+
+
+
   </v-card>
 </template>
 
@@ -163,6 +181,8 @@
       return {
         help_dialog: false,
         application: null,
+        loading: false,
+        error: null,
       }
     },
     mounted(){
@@ -170,7 +190,9 @@
     },
     methods: {
       get_application(){
+        this.loading = true
         this.application = null
+        this.error = null
         const url = `${process.env.VUE_APP_SHINSEI_MANAGER_URL}/v2/applications/${this.application_id}`
         this.axios.get(url)
         .then(({data}) => {
@@ -178,8 +200,20 @@
           this.application.properties.form_data = JSON.parse(this.application.properties.form_data)
         })
         .catch((error) => {
-          if(error.response) console.error(error.response.data)
-          else console.error(error)
+          if(error.response) {
+            console.error(error.response.data)
+            if(error.response.status === 404) {
+              this.error = `アイテム${this.application_id}見つけれませんでした
+              Item ${this.application_id} not found`
+            }
+            console.log(error.response.status)
+          }
+          else {
+            console.error(error)
+          }
+        })
+        .finally(() => {
+          this.loading = false
         })
       },
       reject_application(){
