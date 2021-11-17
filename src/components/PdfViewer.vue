@@ -156,9 +156,8 @@
 <script>
 import { PDFDocument } from 'pdf-lib'
 import pdf from 'vue-pdf'
+import canvg from 'canvg' // used to turn Hankos into PNG so as to include them in the pdf
 
-// used to turn Hankos into PNG so as to include them in the pdf
-import canvg from 'canvg'
 
 
 export default {
@@ -258,11 +257,10 @@ export default {
       this.load_error = null
       try {
         this.pdfDoc = await PDFDocument.load(buffer)
-
         this.set_pdf_rotation()
-
         this.load_pdf_hankos()
-      } catch (e) {
+      }
+      catch (e) {
         this.load_error = `この機能は.pdfのファイルしかつかえません<br>This feature only supports .pdf files`
       }
     },
