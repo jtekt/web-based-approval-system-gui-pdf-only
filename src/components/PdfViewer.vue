@@ -78,7 +78,7 @@
               v-model.number="hanko_scale_slider_value"
               min="1"
               max="100"
-              step="5"
+              step="2"
               thumb-label="always"/>
           </v-sheet>
 
@@ -198,6 +198,8 @@ export default {
     if (this.file_id) {
       this.view_pdf(this.file_id)
     }
+
+    this.restore_hanko_size()
   },
   watch: {
     file_id () {
@@ -265,11 +267,22 @@ export default {
       }
     },
 
+    restore_hanko_size(){
+      const {hanko_size} = localStorage
+      if(hanko_size) this.hanko_scale_slider_value = hanko_size
+    },
+
+    save_hanko_size(){
+      localStorage.hanko_size = this.hanko_scale_slider_value
+    },
+
 
     async pdf_clicked (event) {
 
       if(!this.current_user_can_stamp) return
       if (!confirm(`Apply Hanko here?`)) return
+
+      this.save_hanko_size()
 
       const pages = this.pdfDoc.getPages()
       const page = pages[this.page_number]
