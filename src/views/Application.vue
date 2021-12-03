@@ -77,6 +77,10 @@
           <!-- Approval flow -->
           <v-col>
 
+            <div class="email_warning">
+              回覧はメールマークをクリックして作成されたメールを送信してください
+            </div>
+
             <div class="approval_flow" >
 
               <template
@@ -358,6 +362,9 @@
   height: 150px;
 }
 
+.email_warning {
+  color: #c00000;
+}
 
 
 
