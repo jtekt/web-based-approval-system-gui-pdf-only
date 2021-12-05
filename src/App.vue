@@ -1,7 +1,6 @@
 <template>
   <AppTemplate
-    :options="options"
-    @user="$store.commit('set_current_user', $event)">
+    :options="options">
 
     <template v-slot:nav>
       <v-list
@@ -42,6 +41,7 @@ export default {
       skip_greetings: process.env.NODE_ENV === 'development',
       login_url: `${process.env.VUE_APP_AUTHENTICATION_API_URL}/login`,
       identification_url: `${process.env.VUE_APP_AUTHENTICATION_API_URL}/v2/whoami`,
+      password_reset_url: 'http://10.115.1.100:31098/password_reset',
       main_class: 'grey lighten-4',
       footer_color: 'grey lighten-4',
     },
@@ -54,9 +54,7 @@ export default {
   }),
 
   methods: {
-    get_user(user){
-      console.log(user)
-    }
+
   }
-};
+}
 </script>
