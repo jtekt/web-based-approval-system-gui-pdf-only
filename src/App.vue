@@ -1,6 +1,7 @@
 <template>
   <AppTemplate
-    :options="options">
+    :options="options"
+    @user="$store.commit('set_current_user', $event)">
 
     <template v-slot:nav>
       <v-list
