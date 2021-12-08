@@ -234,7 +234,7 @@
       },
       delete_application(){
         if(!confirm("本申請を削除致しますか？")) return
-        const url = `${process.env.VUE_APP_SHINSEI_MANAGER_URL}/applications/${this.application_id}`
+        const url = `${process.env.VUE_APP_SHINSEI_MANAGER_URL}/v2/applications/${this.application_id}`
         this.axios.delete(url)
         .then( () => {
           this.$router.push({name: 'submitted_applications'})

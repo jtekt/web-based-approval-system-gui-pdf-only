@@ -59,6 +59,10 @@
         application_count: 0,
         type: 'PDF',
         error: null,
+        relationship_lookup: {
+          'submitted': 'SUBMITTED_BY',
+          'received': 'SUBMITTED_TO'
+        },
 
       }
     },
@@ -67,7 +71,7 @@
     },
     mounted(){
 
-      this.get_application_count()
+      this.get_applications()
     },
     watch: {
       options: {
@@ -77,28 +81,11 @@
         deep: true,
       },
       direction(){
-        this.get_application_count()
+        this.get_applications()
       }
     },
     methods: {
-      get_application_count(){
-        this.loading = true
 
-        const url = `${process.env.VUE_APP_SHINSEI_MANAGER_URL}/v2/applications/${this.direction}/${this.state}/count`
-
-        const params = { type: this.type }
-
-
-        this.axios.get(url, {params})
-        .then( ({data}) => {
-          this.application_count = data.application_count
-          this.get_applications()
-        })
-        .catch((error) => {
-          console.error(error)
-          this.error = error
-        })
-      },
       format_date_neo4j(date){
         return `${date.year}/${date.month}/${date.day}`
       },
@@ -108,24 +95,26 @@
 
         this.applications = []
 
-        const direction = this.direction
-
-        const state = this.state
-
         const { page, itemsPerPage } = this.options
 
         const params = {
           start_index: (page-1) * itemsPerPage,
           batch_size: itemsPerPage,
           type: this.type,
+          relationship: this.relationship_lookup[this.direction],
+          state: this.state,
         }
 
-        const url = `${process.env.VUE_APP_SHINSEI_MANAGER_URL}/v2/applications/${direction}/${state}`
+        const url = `${process.env.VUE_APP_SHINSEI_MANAGER_URL}/v3/applications`
 
         this.axios.get(url, {params})
         .then( ({data}) => {
-          this.applications = data
+          this.applications = data.applications
+          this.application_count = data.count
           this.applications.forEach((application) => {
+
+            // Adding current recipient and progress to application
+            // This should better be done somewhere else
 
             application.current_recipient = application.recipients
               .slice()
