@@ -37,7 +37,7 @@ export default {
 
   data: () => ({
     options: {
-      title: "申請マネージャー（PDF専用GUI）",
+      title: "申請マネージャー",
       authenticate: true,
       skip_greetings: process.env.NODE_ENV === 'development',
       login_url: `${process.env.VUE_APP_AUTHENTICATION_API_URL}/login`,
