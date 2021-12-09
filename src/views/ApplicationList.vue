@@ -72,7 +72,7 @@
           'submitted' : '送信トレイ / Outbox',
           'received': '受信トレイ / Inbox'
         },
-        items: ['承認中 / Pending', '却下 / Rejected', '承認完了 / Approved'],
+        items: ['承認待ち / Pending', '却下 / Rejected', '承認完了 / Approved'],
 
         tables: {
           submitted: [
