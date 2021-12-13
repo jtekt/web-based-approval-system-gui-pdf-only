@@ -52,8 +52,8 @@ export default {
       options: {
         title: "申請マネージャー",
         skip_greetings: process.env.NODE_ENV === 'development',
-        login_url: `${process.env.VUE_APP_USER_MANAGER_API_URL}/v2/auth/login`,
-        identification_url: `${process.env.VUE_APP_USER_MANAGER_API_URL}/v2/users/self`,
+        login_url: `${process.env.VUE_APP_EMPLOYEE_MANAGER_API_URL}/v2/auth/login`,
+        identification_url: `${process.env.VUE_APP_EMPLOYEE_MANAGER_API_URL}/v2/users/self`,
         password_reset_url: `${process.env.VUE_APP_EMPLOYEE_MANAGER_FRONT_URL}/password_reset`,
         main_class: 'grey lighten-4',
         footer_color: 'grey lighten-4',
