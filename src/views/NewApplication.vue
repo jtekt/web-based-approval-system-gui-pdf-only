@@ -139,9 +139,13 @@
 <script>
 import UserPicker from '@moreillon/vue_user_picker'
 import NewApplicationApprovalFlow from '@/components/NewApplicationApprovalFlow.vue'
+import IdUtils from '@/mixins/IdUtils.js'
 
 export default {
   name: 'NewApplication',
+  mixins: [
+    IdUtils
+  ],
   data(){
     return {
       title: '',
@@ -173,14 +177,16 @@ export default {
         title: this.title,
         type: 'PDF',
         form_data: this.form_data,
-        recipients_ids: this.recipients.map( recipient => recipient.identity),
+        recipients_ids: this.recipients.map( recipient => this.get_id_of_item(recipient)),
         private: true, // A bit dangerous
       }
 
 
       this.axios.post(url, body)
       .then(({ data }) => {
-        this.$router.push({ name: 'application', params: { application_id: data.identity } })
+        this.$store.commit('require_email', true)
+        const application_id = this.get_id_of_item(data)
+        this.$router.push({ name: 'application', params: { application_id } })
       })
       .catch(error => {
         console.error(error)
@@ -202,7 +208,7 @@ export default {
       .finally(() => { this.file_uploading = false })
     },
     add_to_recipients(new_recipient) {
-      const existing_recipient = this.recipients.find(recipient => recipient.identity === new_recipient.identity)
+      const existing_recipient = this.recipients.find(recipient => this.get_id_of_item(recipient) === this.get_id_of_item(new_recipient))
       if (existing_recipient) return alert('Duplicates not allowed')
       this.recipients.push(new_recipient)
     },
@@ -215,7 +221,7 @@ export default {
       // NOTE: NO CONFIDENTIALITY FOR NOW!
 
       const application_id = this.$route.query.copy_of
-      const url = `${process.env.VUE_APP_SHINSEI_MANAGER_URL}/v2/applications/${application_id}`
+      const url = `${process.env.VUE_APP_SHINSEI_MANAGER_URL}/v1/applications/${application_id}`
       this.axios.get(url)
       .then(({data}) => {
 
