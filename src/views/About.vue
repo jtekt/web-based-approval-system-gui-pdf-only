@@ -42,8 +42,8 @@ export default {
           version: null
         },
         {
-          name: 'User manager API',
-          url: process.env.VUE_APP_USER_MANAGER_API_URL,
+          name: 'Employee manager API',
+          url: process.env.VUE_APP_EMPLOYEE_MANAGER_API_URL,
           version: null
         },
         {
