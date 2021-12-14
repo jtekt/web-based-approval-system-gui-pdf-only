@@ -13,23 +13,30 @@
           :to="item.to"
           exact>
 
-          <v-list-item-icon>
-            <v-icon>{{item.icon}}</v-icon>
-          </v-list-item-icon>
+          <v-badge
+            inline
+            v-if="item.count"
+            :content="item.count"
+            color="#c00000">
+            <v-list-item-icon>
+              <v-icon>{{item.icon}}</v-icon>
+            </v-list-item-icon>
+            <v-list-item-content>
+              <v-list-item-title>{{item.title}}</v-list-item-title>
+            </v-list-item-content>
+          </v-badge>
 
-          <v-list-item-content>
-            <v-list-item-title>
-              <v-badge
-                v-if="item.count"
-                :content="item.count"
-                color="#c00000">
-                {{item.title}}
-              </v-badge>
-              <span v-else>{{item.title}}</span>
+          <template v-else>
+            <v-list-item-icon>
+              <v-icon>{{item.icon}}</v-icon>
+            </v-list-item-icon>
+            <v-list-item-content>
+              <v-list-item-title>{{item.title}}</v-list-item-title>
+            </v-list-item-content>
+          </template>
 
-            </v-list-item-title>
 
-          </v-list-item-content>
+
         </v-list-item>
       </v-list>
     </template>
