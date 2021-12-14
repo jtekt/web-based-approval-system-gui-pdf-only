@@ -261,13 +261,16 @@ export default {
     },
     async load_pdf (buffer) {
       this.load_error = null
+      //const options = { ignoreEncryption: true }
+      const options = {}
       try {
-        this.pdfDoc = await PDFDocument.load(buffer)
+        this.pdfDoc = await PDFDocument.load(buffer,options)
         this.set_pdf_rotation()
         this.load_pdf_hankos()
       }
-      catch (e) {
-        this.load_error = `この機能は.pdfのファイルしかつかえません<br>This feature only supports .pdf files`
+      catch (error) {
+        console.error(error)
+        this.load_error = `このファイルは申請マネージャのPDFリーダーで開けません<br>This file cannot be opened with the PDF reader of Shinsei-manager`
       }
     },
 
