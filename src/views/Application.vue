@@ -265,11 +265,15 @@
         return `${date.year}/${date.month}/${date.day}`
       },
       email_button_clicked(){
+
         if(this.current_recipient) this.send_email_to_recipient(this.current_recipient)
         else this.send_email_to_applicant()
       },
 
       send_email_to_recipient (recipient) {
+
+        this.$store.commit('require_email', false)
+
         // Weird formatting because preserves indentation
 
         const email_body = `${recipient.properties.display_name} 様
@@ -296,6 +300,8 @@
 
       },
       send_email_to_applicant () {
+
+        this.$store.commit('require_email', false)
         // Weird formatting because preserves indentation
 
         const email_body = `${this.application.applicant.properties.display_name} 様
