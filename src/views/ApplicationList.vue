@@ -72,12 +72,11 @@
           'submitted' : '送信トレイ / Outbox',
           'received': '受信トレイ / Inbox'
         },
-        items: ['承認待ち / Pending', '却下 / Rejected', '承認完了 / Approved'],
 
         tables: {
           submitted: [
             {
-              title: '承認中 / Pending',
+              title: '承認待ち / Pending',
               state: 'pending',
               headers: [
                 {text: '日付 / Date', value: "properties.creation_date"},
@@ -107,7 +106,7 @@
           ],
           received: [
             {
-              title: '承認中 / Pending',
+              title: '承認待ち / Pending',
               state: 'pending',
               headers: [
                 {text: '日付 / Date', value: "properties.creation_date"},
