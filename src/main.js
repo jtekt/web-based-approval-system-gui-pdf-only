@@ -22,13 +22,13 @@ const get_received_pending_application_count = () =>{
   .then( ({data}) => { store.commit('set_received_pending_application_count', data.count) })
   .catch(error => {
     console.error(error)
-    setTimeout(get_received_pending_application_count,3000)
   })
 }
 
-router.afterEach( () => {
+setTimeout(() => {
   get_received_pending_application_count()
-})
+  router.afterEach( () => { get_received_pending_application_count() })
+},1000)
 
 new Vue({
   router,
