@@ -182,6 +182,7 @@ export default {
       page_count: 1,
       rotation: 0,
 
+      filename: null,
       pdfDoc: null,
       shown_pdf: null,
 
@@ -198,6 +199,7 @@ export default {
     }
   },
   mounted () {
+
     if (this.file_id) {
       this.view_pdf(this.file_id)
     }
@@ -208,8 +210,10 @@ export default {
     file_id () {
       this.view_pdf(this.file_id)
     },
-    page_number () {
+    page_number (page) {
       this.set_pdf_rotation()
+      const query = { ...this.$route.query, page }
+      this.$router.replace({ query }).catch(()=>{})
     }
   },
   methods: {
@@ -222,6 +226,16 @@ export default {
     previous_page () {
       if (this.page_number > 0) this.page_number--
     },
+    get_file_name(file_id){
+      const url = `${process.env.VUE_APP_SHINSEI_MANAGER_URL}/applications/${this.application_id}/files/${file_id}/filename`
+
+      this.axios.get(url)
+      .then(({data}) => { this.filename = data.filename })
+      .catch((error) => {
+        if(error.response) console.error(error.response.data)
+        else console.error(error)
+      })
+    },
     view_pdf (file_id) {
       // Check if IE
       if (!!window.MSInputMethodContext && !!document.documentMode) {
@@ -230,13 +244,17 @@ export default {
         return
       }
 
+
+
       this.loading = true
 
       // reset the file
       this.shown_pdf = null
 
-      // Reset page number
-      this.page_number = 0
+      // This is not useful by itself
+      // would be used when loading the application so as to open the right file
+      const query = { ...this.$route.query, pdf: file_id }
+      this.$router.replace({ query }).catch(()=>{})
 
       // Load the file as an arrayBuffer
       // Note: could be done using axios
@@ -244,7 +262,10 @@ export default {
       const axios_options = { responseType: 'arraybuffer' }
 
       this.axios.get(file_url, axios_options)
-      .then(({data}) => { this.load_pdf(data) })
+      .then(({data}) => {
+        this.get_file_name(file_id)
+        this.load_pdf(data)
+       })
       .catch((error) => {
         if(error.response) console.error(error.response.data)
         else console.error(error)
@@ -252,6 +273,13 @@ export default {
         this.loading = false
       })
 
+    },
+    restore_page_number(){
+      const page_number_query = this.$route.query.page
+      if(!page_number_query) return this.page_number = 0
+      const parsed_page = parseInt(page_number_query)
+      if(isNaN(parsed_page)) return this.page_number = 0
+      this.page_number = parsed_page
     },
     set_pdf_rotation(){
       const pages = this.pdfDoc.getPages()
@@ -261,10 +289,12 @@ export default {
     },
     async load_pdf (buffer) {
       this.load_error = null
-      //const options = { ignoreEncryption: true }
-      const options = {}
+      const options = { ignoreEncryption: false }
       try {
         this.pdfDoc = await PDFDocument.load(buffer,options)
+
+        this.restore_page_number()
+
         this.set_pdf_rotation()
         this.load_pdf_hankos()
       }
@@ -481,13 +511,15 @@ export default {
     download_pdf () {
       const pdf_blob = new Blob([this.shown_pdf], { type: 'application/pdf' })
 
+      const filename = this.filename || `${this.file_id}.pdf`
+
       if (window.navigator.msSaveOrOpenBlob) {
-        window.navigator.msSaveBlob(pdf_blob, `${this.file_id}.pdf`)
+        window.navigator.msSaveBlob(pdf_blob, filename)
       }
       else {
         const elem = window.document.createElement('a')
         elem.href = window.URL.createObjectURL(pdf_blob)
-        elem.download = `${this.file_id}.pdf`
+        elem.download = filename
         document.body.appendChild(elem)
         elem.click()
         document.body.removeChild(elem)
