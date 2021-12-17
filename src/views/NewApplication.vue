@@ -69,7 +69,7 @@
               v-bind="attrs"
               v-on="on">
               <v-icon>mdi-account-plus</v-icon>
-              <span>承認者追加 / Add recipient</span>
+              <span>捺印者追加 / Add recipient</span>
 
             </v-btn>
           </template>
@@ -77,7 +77,7 @@
 
           <v-card>
             <v-card-title class="text-h5">
-              承認者追加 / Add recipient
+              捺印者追加 / Add recipient
             </v-card-title>
 
             <v-card-text>
