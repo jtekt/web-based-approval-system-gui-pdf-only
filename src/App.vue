@@ -63,6 +63,7 @@ export default {
         identification_url: `${process.env.VUE_APP_EMPLOYEE_MANAGER_API_URL}/v2/users/self`,
         profile_url: `${process.env.VUE_APP_EMPLOYEE_MANAGER_FRONT_URL}/employees/self`,
         password_reset_url: `${process.env.VUE_APP_EMPLOYEE_MANAGER_FRONT_URL}/password_reset`,
+        homepage_url: process.env.VUE_APP_HOMEPAGE_URL,
         main_class: 'grey lighten-4',
         footer_color: 'grey lighten-4',
       },
