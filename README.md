@@ -1,24 +1,10 @@
-# pdf_approval_manager
+# 電子捺印システム (PDF専用GUI)
 
-## Project setup
-```
-npm install
-```
+This is a GUI for 電子捺印システム (also known as 申請マネージャ) which is designed specifically to handle applications of type PDF.
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+# Technologies ansd libraries
 
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+* Vue.js
+* Vuetify
+* pdf-lib
+* Axios
