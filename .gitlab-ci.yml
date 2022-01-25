@@ -14,6 +14,8 @@ containerization:
   stage: containerization
   tags:
     - moreillon
+  only:
+    - master
   script:
     # Docker hub login
     - echo "${DOCKER_HUB_PASSWORD}" | docker login --username ${DOCKER_HUB_USERNAME} --password-stdin
@@ -33,6 +35,8 @@ deployment:
   stage: deployment
   tags:
     - moreillon
+  only:
+    - master
   script:
     # create/update the deployment
     - envsubst < kubernetes_manifest.yml | kubectl apply -f -
