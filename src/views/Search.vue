@@ -29,6 +29,18 @@
                   v-model="application_type"/>
               </v-col>
             </v-row> -->
+            <v-row>
+              <v-col>
+                <DatePickerMenu
+                  label="いつから / From"
+                  @selection="start_date = $event"/>
+              </v-col>
+              <v-col>
+                <DatePickerMenu
+                  label="いつまで / To"
+                  @selection="end_date = $event"/>
+              </v-col>
+            </v-row>
             <v-row align="center">
               <v-col cols="auto">
                 申請者のグループ / Applicant group
@@ -76,17 +88,23 @@
           </v-card-text>
         </v-form>
 
-        <v-card-text>
-          <v-data-table
-            :loading="loading"
-            :items="applications"
-            :headers="headers">
 
-          </v-data-table>
-        </v-card-text>
 
 
       </v-card>
+    </v-card-text>
+
+    <v-card-text>
+      <v-data-table
+        :loading="loading"
+        :items="applications"
+        :headers="headers">
+
+      <template v-slot:item.properties.creation_date="{ item }">
+        {{format_date(item.properties.creation_date)}}
+      </template>
+
+      </v-data-table>
     </v-card-text>
 
 
@@ -97,11 +115,13 @@
 import XLSX from 'xlsx'
 import IdUtils from '@/mixins/IdUtils.js'
 import AddGroupDialog from '@/components/AddGroupDialog.vue'
+import DatePickerMenu from '@/components/DatePickerMenu.vue'
 
 export default {
   name: 'Search',
   components: {
     AddGroupDialog,
+    DatePickerMenu,
   },
   mixins: [
     IdUtils
@@ -113,8 +133,10 @@ export default {
 
       applications: [],
       headers: [
-        {name: 'ID', value: 'properties._id'},
-        {name: 'Date', value: 'properties.title'}
+        {text: 'ID', value: 'properties._id'},
+        {text: 'Date', value: 'properties.creation_date'},
+        {text: 'Title', value: 'properties.title'},
+        {text: 'Applicant', value: 'applicant.properties.display_name'},
       ],
 
       application_types: [],
@@ -217,7 +239,11 @@ export default {
       var ws1 = XLSX.utils.table_to_sheet(document.getElementById('search_results_table'))
       XLSX.utils.book_append_sheet(workbook, ws1, 'Sheet1')
       XLSX.writeFile(workbook, 'export.xlsx')
-    }
+    },
+    format_date (date) {
+      const { year, month, day } = date
+      return `${year}/${String(month).padStart(2, '0')}/${String(day).padStart(2, '0')}`
+    },
   },
   computed: {
     selected_group_id () {
