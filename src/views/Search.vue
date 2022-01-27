@@ -98,7 +98,8 @@
       <v-data-table
         :loading="loading"
         :items="applications"
-        :headers="headers">
+        :headers="headers"
+        @click:row="row_clicked($event)">
 
       <template v-slot:item.properties.creation_date="{ item }">
         {{format_date(item.properties.creation_date)}}
@@ -195,7 +196,7 @@ export default {
         end_date: this.end_date,
         group_id: this.selected_group_id,
         state: this.approval_state,
-        batch_size: 50,
+        batch_size: -1,
         start_index: this.applications.length
       }
 
@@ -233,6 +234,9 @@ export default {
     select_group (group) {
       this.modal_open = false
       this.selected_group = group
+    },
+    row_clicked({properties: {_id}}){
+      this.$router.push({name: 'application', params: {application_id: _id}})
     },
     export_table () {
       var workbook = XLSX.utils.book_new()

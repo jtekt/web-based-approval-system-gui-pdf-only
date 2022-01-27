@@ -1,5 +1,6 @@
 <template>
-  <v-card>
+  <v-card
+    :loading="loading">
 
     <template v-if="application && !loading && !error">
 
@@ -70,11 +71,20 @@
                 </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
+
+            <!-- Application content, i.e. comment -->
             <v-list-item two-line>
-              <v-list-item-content>
+
+              <v-list-item-content v-if="!application.forbidden">
                 <v-list-item-subtitle>申請者のコメント / Applicant comment</v-list-item-subtitle>
                 <v-list-item-title>{{application.properties.form_data[1].value || "-"}}</v-list-item-title>
               </v-list-item-content>
+
+              <v-list-item-content v-else>
+                <v-list-item-subtitle>申請者内容 / Application content</v-list-item-subtitle>
+                <v-list-item-title>機密 / Confidential</v-list-item-title>
+              </v-list-item-content>
+
             </v-list-item>
 
 
@@ -126,6 +136,7 @@
             </div>
 
             <RecipientComments
+              v-if="!application.forbidden"
               :application="application"
               @comment_updated="get_application()"/>
 
@@ -136,7 +147,7 @@
 
       </v-card-text>
 
-      <v-card-text>
+      <v-card-text v-if="!application.forbidden">
         <PdfViewer
           :application="application"
           @pdf_stamped="get_application()"
@@ -145,14 +156,6 @@
 
 
     </template>
-
-    <v-card-text
-      v-if="loading"
-      class='text-center'>
-      <v-progress-circular
-        size="50"
-        indeterminate/>
-    </v-card-text>
 
     <v-card-text
       v-if="error"
@@ -215,27 +218,30 @@
         this.application = null
         this.error = null
         const url = `${process.env.VUE_APP_SHINSEI_MANAGER_URL}/v1/applications/${this.application_id}`
+
         this.axios.get(url)
-        .then(({data}) => {
-          this.application = data
-          this.application.properties.form_data = JSON.parse(this.application.properties.form_data)
-        })
-        .catch((error) => {
-          if(error.response) {
-            console.error(error.response.data)
-            if(error.response.status === 404) {
-              this.error = `アイテム${this.application_id}見つけれませんでした
-              Item ${this.application_id} not found`
+          .then(({data}) => {
+            this.application = data
+            if(!this.application.forbidden) {
+              this.application.properties.form_data = JSON.parse(this.application.properties.form_data)
             }
-            console.log(error.response.status)
-          }
-          else {
-            console.error(error)
-          }
-        })
-        .finally(() => {
-          this.loading = false
-        })
+          })
+          .catch((error) => {
+            if(error.response) {
+              console.error(error.response.data)
+              if(error.response.status === 404) {
+                this.error = `アイテム${this.application_id}見つけれませんでした
+                Item ${this.application_id} not found`
+              }
+              console.log(error.response.status)
+            }
+            else {
+              console.error(error)
+            }
+          })
+          .finally(() => {
+            this.loading = false
+          })
       },
       reject_application(){
         const url = `${process.env.VUE_APP_SHINSEI_MANAGER_URL}/applications/${this.application_id}/reject`
