@@ -99,6 +99,8 @@
         :loading="loading"
         :items="applications"
         :headers="headers"
+        :options.sync="options"
+        :server-items-length="count"
         @click:row="row_clicked($event)">
 
       <template v-slot:item.properties.creation_date="{ item }">
@@ -133,6 +135,8 @@ export default {
       error: null,
 
       applications: [],
+      options: {},
+
       headers: [
         {text: 'ID', value: 'properties._id'},
         {text: 'Date', value: 'properties.creation_date'},
@@ -174,6 +178,14 @@ export default {
   mounted () {
     this.get_application_types()
   },
+  watch: {
+    options: {
+      handler () {
+        this.search()
+      },
+      deep: true,
+    },
+  },
   methods: {
     get_application_types () {
       const url = `${process.env.VUE_APP_SHINSEI_MANAGER_URL}/applications/types`
@@ -187,6 +199,9 @@ export default {
       this.error = false
       const url = `${process.env.VUE_APP_SHINSEI_MANAGER_URL}/applications`
 
+      const { page, itemsPerPage } = this.options
+
+
       const params = {
         hanko_id: this.hanko_id,
         application_id: this.application_id,
@@ -196,13 +211,13 @@ export default {
         end_date: this.end_date,
         group_id: this.selected_group_id,
         state: this.approval_state,
-        batch_size: -1,
-        start_index: this.applications.length
+        start_index: (page-1) * itemsPerPage,
+        batch_size: itemsPerPage,
       }
 
       this.axios.get(url, { params })
         .then( ({data}) => {
-          this.applications = [...this.applications,...data.applications]
+          this.applications = data.applications
           this.count = data.count
 
           // Unpack form-data
@@ -225,7 +240,6 @@ export default {
 
     },
     search () {
-      this.applications = []
       this.field_labels = []
       this.get_applications()
 
@@ -254,9 +268,6 @@ export default {
       if (!this.selected_group) return null
       return this.get_id_of_item(this.selected_group)
     },
-    all_loaded(){
-      return this.applications.length === this.count
-    }
   }
 }
 </script>
