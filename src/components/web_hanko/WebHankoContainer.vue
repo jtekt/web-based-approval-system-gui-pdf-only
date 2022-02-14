@@ -3,6 +3,7 @@
 
     <!-- recipient name -->
     <a
+      target="_blank"
       :href="user_profile_url"
       class="hanko_container_header">
       {{ recipient.properties.last_name
