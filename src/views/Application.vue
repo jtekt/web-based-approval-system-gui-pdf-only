@@ -42,7 +42,9 @@
       <v-banner
         v-if="this.$store.state.email_required"
         single-line
-        class="text-center red--text">
+        color="red"
+        dark
+        class="text-center">
         回覧はメールマークをクリックして作成されたメールを送信してください
       </v-banner>
 
