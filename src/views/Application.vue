@@ -286,7 +286,7 @@
 
         const email_body = `${recipient.properties.display_name} 様
 
-申請マネージャーの通知メールです。
+電子捺印システムの通知メールです。
 
 申請を提出しました。
 
@@ -313,7 +313,7 @@
 
         const email_body = `${this.application.applicant.properties.display_name} 様
 
-申請マネージャーの通知メールです。
+電子捺印システムの通知メールです。
 
 申請の承認が${this.application_is_rejected ? '却下' : '完了'}されました。
 
