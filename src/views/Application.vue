@@ -291,8 +291,7 @@
 申請を提出しました。
 
 申請者: ${this.application.applicant.properties.display_name}
-タイプ: ${this.application.properties.type}
-タイトル: ${this.application.properties.title}
+件名: ${this.application.properties.title}
 提出先URL: ${window.location.origin}/applications/${this.get_id_of_item(this.application)}
 
 ※IEでは動作しません。Edge (Chromium)/Firefox/GoogleChromeをご使用ください。　
@@ -301,7 +300,7 @@
 確認お願いします。`
 
       const email_string = `mailto:${recipient.properties.email_address}
-?subject=[申請マネージャ] ${this.application.properties.type}
+?subject=[電子捺印システム] ${this.application.properties.title}
 &body=${encodeURIComponent(email_body)}`
 
         window.location.href = email_string
@@ -319,8 +318,7 @@
 申請の承認が${this.application_is_rejected ? '却下' : '完了'}されました。
 
 申請者: ${this.application.applicant.properties.display_name}
-タイプ: ${this.application.properties.type}
-タイトル: ${this.application.properties.title}
+件名: ${this.application.properties.title}
 提出先URL: ${window.location.origin}/applications/${this.get_id_of_item(this.application)}
 
 ※IEでは動作しません。Edge (Chromium)/Firefox/GoogleChromeをご使用ください。
@@ -329,7 +327,7 @@
 確認お願いします。`
 
         const email_string = `mailto:${this.application.applicant.properties.email_address}
-  ?subject=[申請マネージャ] ${this.application.properties.type}
+  ?subject=[電子捺印システム] ${this.application.properties.title}
   &body=${encodeURIComponent(email_body)}`
 
         window.location.href = email_string
