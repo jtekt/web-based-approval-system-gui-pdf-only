@@ -1,92 +1,57 @@
 <template>
-
   <v-list-item
     two-line>
 
-    <v-list-item-content>
-      <v-list-item-subtitle>{{recipient.properties.display_name}}</v-list-item-subtitle>
-      <!-- <v-list-item-title v-if="!editing">
-        {{recipient_comment || 'コメント無し / No comment'}}
-      </v-list-item-title> -->
-      <v-list-item-title>
-        <v-textarea
-          v-if="editing"
-          outlined
-          auto-grow
-          dense
-          :rows="1"
-          v-model="new_comment" />
-        <v-textarea
-          v-else
-          solo
-          flat
-          readonly
-          auto-grow
-          dense
-          :rows="1"
-          :value="recipient_comment" />
-      </v-list-item-title>
-    </v-list-item-content>
+    <template v-if="decision">
+      <v-list-item-content>
+        <v-list-item-subtitle>{{recipient.properties.display_name}}</v-list-item-subtitle>
+        <v-list-item-title>
+          <v-textarea
+            v-if="editing"
+            outlined
+            auto-grow
+            dense
+            :rows="1"
+            v-model="new_comment" />
+          <v-textarea
+            v-else
+            solo
+            flat
+            readonly
+            auto-grow
+            dense
+            :rows="1"
+            :value="recipient_comment" />
+        </v-list-item-title>
+      </v-list-item-content>
 
-    <v-list-item-icon
-      v-if="recipient_is_user">
-      <template v-if="editing">
-        <v-btn
-          @click="disable_editing()"
-          icon>
-          <v-icon>mdi-close</v-icon>
-        </v-btn>
-        <v-btn
-          @click="update_comment()"
-          icon>
-          <v-icon>mdi-content-save</v-icon>
-        </v-btn>
-      </template>
+      <v-list-item-icon
+        v-if="recipient_is_user">
+        <template v-if="editing">
+          <v-btn
+            @click="disable_editing()"
+            icon>
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+          <v-btn
+            @click="update_comment()"
+            icon>
+            <v-icon>mdi-content-save</v-icon>
+          </v-btn>
+        </template>
 
-      <v-btn
-        v-if="!editing"
-        @click="enable_editing()"
-        icon>
-        <v-icon>mdi-pencil</v-icon>
-      </v-btn>
-    </v-list-item-icon>
+        <v-btn
+          v-if="!editing"
+          @click="enable_editing()"
+          icon>
+          <v-icon>mdi-pencil</v-icon>
+        </v-btn>
+      </v-list-item-icon>
+    </template>
+
+
 
   </v-list-item>
-
-  <!-- <tr>
-
-
-    <td>
-      <textarea
-        v-if="editing && decision"
-        v-model="new_comment"/>
-      <div
-        v-else
-        style="white-space: pre-line;" v-text="recipient_comment || 'No comment'" />
-
-    </td>
-    <td class="actions">
-      <button
-        type="button"
-        @click="enable_editing()"
-        v-if="recipient_is_user && !editing">
-        <pencil-icon/>
-      </button>
-      <button
-        type="button"
-        @click="disble_editing()"
-        v-if="editing">
-        <close-icon/>
-      </button>
-      <button
-        type="button"
-        @click="update_comment()"
-        v-if="editing">
-        <content-save-icon/>
-      </button>
-
-    </td>
-  </tr> -->
 </template>
 
 <script>
