@@ -6,9 +6,7 @@
       target="_blank"
       :href="user_profile_url"
       class="hanko_container_header">
-      {{ recipient.properties.last_name
-        || recipient.properties.family_name_kanji
-        || recipient.family_name}}
+      {{ recipient_displayed_name}}
     </a>
 
     <div class="hanko_area">
@@ -16,7 +14,7 @@
       <!-- TODO: provide alternatives for the name! -->
       <WebHanko
         v-if="recipient.approval"
-        :name="recipient.properties.last_name"
+        :name="recipient_displayed_name"
         :approvalId="get_id_of_item(recipient.approval)"
         :date="recipient.approval.properties.date"/>
 
@@ -101,6 +99,16 @@ export default {
     user_as_recipient(){
       return this.application.recipients.find(recipient => this.get_id_of_item(recipient) === this.current_user_id)
     },
+    recipient_displayed_name () {
+
+      const {
+        last_name,
+        display_name
+      } = this.recipient.properties
+
+      if(display_name.length <= 6) return display_name
+      else return last_name
+    }
   }
 }
 </script>

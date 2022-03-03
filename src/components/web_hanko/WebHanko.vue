@@ -25,7 +25,7 @@
         :font-size="name_font_size"
         x="50%"
         :y="name_y">
-        {{name}}
+        {{formatted_name}}
       </text>
 
       <!-- original qr is 21 x 21, resizing to 80 x 80 -->
@@ -90,8 +90,14 @@ export default {
     this.generate_qr()
   },
   computed: {
+    formatted_name(){
+      if(this.name.length <= 6) return this.name
+      else return `${this.name.substring(0,6)}...`
+    },
     name_font_size () {
-      return Math.min(55 / this.name.length, 55 / 2)
+      //const max_size = 55
+      //return Math.min(max_size / (0.8*this.name.length), max_size / 2)
+      return 18
     },
     name_y () {
       return 17.5 + 0.5 * this.name_font_size
