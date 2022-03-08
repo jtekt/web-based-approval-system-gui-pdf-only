@@ -79,7 +79,9 @@
 
               <v-list-item-content v-if="!application.forbidden">
                 <v-list-item-subtitle>申請者のコメント / Applicant comment</v-list-item-subtitle>
-                <v-list-item-title>{{application.properties.form_data[1].value || "-"}}</v-list-item-title>
+                <v-list-item-title class="application_field_value">
+                  {{application.properties.form_data[1].value || "-"}}
+                  </v-list-item-title>
               </v-list-item-content>
 
               <v-list-item-content v-else>
@@ -390,6 +392,8 @@
   height: 150px;
 }
 
-
+.application_field_value{
+  white-space: pre-line;
+}
 
 </style>

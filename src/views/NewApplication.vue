@@ -42,9 +42,14 @@
       </v-row>
       <v-row>
         <v-col>
-          <v-text-field
+          <v-textarea
+              auto-grow
+              rows="1"
+              v-model="form_data[1].value"
+              label="メモ / Comment"/>
+          <!-- <v-text-field
             v-model="form_data[1].value"
-            label="メモ / Comment"/>
+            label="メモ / Comment"/> -->
         </v-col>
       </v-row>
     </v-card-text>
