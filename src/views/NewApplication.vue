@@ -46,7 +46,7 @@
               auto-grow
               rows="1"
               v-model="form_data[1].value"
-              label="メモ / Comment"/>
+              label="申請者のコメント / Applicant comments"/>
           <!-- <v-text-field
             v-model="form_data[1].value"
             label="メモ / Comment"/> -->
