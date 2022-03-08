@@ -1,6 +1,6 @@
 <template>
   <div class="comments">
-    <v-subheader>承認者のコメント / Recipient comments</v-subheader>
+    <v-subheader>捺印者のコメント / Recipient comments</v-subheader>
 
     <RecipientComment
       v-for="(recipient, index) in ordered_recipients"
