@@ -4,41 +4,41 @@
 
     <template v-if="application && !loading && !error">
 
-      <v-toolbar
-        flat>
+      <v-toolbar flat>
 
-        <v-toolbar-title>
-          {{application.properties.title}}
-        </v-toolbar-title>
-
-        <v-spacer></v-spacer>
-
-        <!-- Help dialog -->
-        <HelpDialog />
-
-
-        <v-btn
-          text
-          @click="$router.push({ name: 'new_application', query: { copy_of: get_id_of_item(application) } })">
-          <v-icon>mdi-restore</v-icon>
-          <span>再申請 / Re-submit</span>
-        </v-btn>
-
-
-        <v-btn
-          text
-          :disabled="application_is_fully_approved"
-          color="#c00000"
-          @click="delete_application()">
-          <v-icon>mdi-delete</v-icon>
-          <span>申請削除 / Delete</span>
-        </v-btn>
-
-
-
+        <v-row align="center">
+          <v-col cols="auto">
+            <v-toolbar-title>{{application_id}}</v-toolbar-title>
+          </v-col>
+          <v-spacer />
+          <v-col cols="auto">
+            <HelpDialog />
+          </v-col>
+          <template v-if="user_is_applicant">
+            <v-col cols="auto">
+              <v-btn
+                text
+                @click="$router.push({ name: 'new_application', query: { copy_of: get_id_of_item(application) } })">
+                <v-icon>mdi-restore</v-icon>
+                <span>再申請 / Re-submit</span>
+              </v-btn>
+            </v-col>
+            <v-col cols="auto">
+              <v-btn
+                text
+                :disabled="application_is_fully_approved"
+                color="#c00000"
+                @click="delete_application()">
+                <v-icon>mdi-delete</v-icon>
+                <span>申請削除 / Delete</span>
+              </v-btn>
+            </v-col>
+          </template>
+        </v-row>
 
       </v-toolbar>
       <v-divider />
+
       <v-banner
         v-if="this.$store.state.email_required"
         single-line
@@ -53,6 +53,12 @@
         <v-row>
 
           <v-col>
+            <v-list-item two-line>
+              <v-list-item-content>
+                <v-list-item-subtitle>件名 / Title</v-list-item-subtitle>
+                <v-list-item-title>{{application.properties.title}}</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
             <v-list-item two-line>
               <v-list-item-content>
                 <v-list-item-subtitle>ID</v-list-item-subtitle>
@@ -363,6 +369,9 @@
         const recipient_count = this.application.recipients.length
         const approval_count = this.application.recipients.reduce((acc, recipient) => acc + (recipient.approval ? 1 : 0), 0)
         return approval_count === recipient_count
+      },
+      user_is_applicant () {
+        return this.get_id_of_item(this.application.applicant) === this.current_user_id
       },
 
 
