@@ -136,8 +136,7 @@
                   :key="`recipient_${index}`"
                   :recipient="recipient"
                   :application="application"
-                  @send_email="send_email_to_recipient(recipient)"
-                  @reject="reject_application()"/>
+                  @send_email="send_email_to_recipient(recipient)"/>
               </template>
 
 
@@ -254,6 +253,8 @@
           })
       },
       reject_application(){
+        if(!confirm(`却下しますか? / Reject application?`)) return
+
         const url = `${process.env.VUE_APP_SHINSEI_MANAGER_URL}/applications/${this.application_id}/reject`
 
         this.axios.post(url)
@@ -302,7 +303,7 @@
 件名: ${this.application.properties.title}
 提出先URL: ${window.location.origin}/applications/${this.get_id_of_item(this.application)}
 
-※IEでは動作しません。Edge (Chromium)/Firefox/GoogleChromeをご使用ください。　
+※IEでは動作しません。Edge (Chromium)/Firefox/GoogleChromeをご使用ください。
 ※詳しくは ${window.location.origin}/info
 
 確認お願いします。`
