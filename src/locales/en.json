@@ -21,5 +21,21 @@
   "Reject": "Reject",
   "Search": "Search",
   "Templates": "Templates",
-  "About": "About"
+  "About": "About",
+  "Applicant comment": "Applicant comment",
+  "Stamp size": "Stamp size",
+  "Download": "Download",
+  "Stamping PDF": "Stamping PDF",
+  "New submission": "New application",
+  "Upload OK": "Upload OK",
+  "Approval flow": "Approval flow",
+  "Add recipient": "Add recipient",
+  "Submission": "Submission",
+  "": {
+    "pdf file": ".pdf file"
+  },
+  "pdf file": ".pdf file",
+  "No recipient selected": "No recipient selected",
+  "Please select the recipients of this application": "Please select the recipients of this application",
+  "Submit application": "Submit application"
 }

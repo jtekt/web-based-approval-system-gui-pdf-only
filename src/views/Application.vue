@@ -4,11 +4,12 @@
 
     <template v-if="application && !loading && !error">
 
-      <v-toolbar flat>
+      <v-container fluid>
 
         <v-row align="center">
           <v-col cols="auto">
-            <v-toolbar-title>{{application_id}}</v-toolbar-title>
+            <v-toolbar-title v-if="application">{{ application.properties.title }}</v-toolbar-title>
+            <v-toolbar-title v-else>{{ $t('Application') }}</v-toolbar-title>
           </v-col>
           <v-spacer />
           <v-col cols="auto">
@@ -20,7 +21,7 @@
                 text
                 @click="$router.push({ name: 'new_application', query: { copy_of: get_id_of_item(application) } })">
                 <v-icon>mdi-restore</v-icon>
-                <span>再申請 / Re-submit</span>
+                <span>{{ $t('Re-submit') }}</span>
               </v-btn>
             </v-col>
             <v-col cols="auto">
@@ -30,13 +31,13 @@
                 color="#c00000"
                 @click="delete_application()">
                 <v-icon>mdi-delete</v-icon>
-                <span>申請削除 / Delete</span>
+                <span>{{ $t('Delete') }}</span>
               </v-btn>
             </v-col>
           </template>
         </v-row>
 
-      </v-toolbar>
+      </v-container>
       <v-divider />
 
       <v-banner
@@ -55,7 +56,7 @@
           <v-col>
             <v-list-item two-line>
               <v-list-item-content>
-                <v-list-item-subtitle>件名 / Title</v-list-item-subtitle>
+                <v-list-item-subtitle>{{ $t('Title') }}</v-list-item-subtitle>
                 <v-list-item-title>{{application.properties.title}}</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
@@ -67,13 +68,15 @@
             </v-list-item>
             <v-list-item two-line>
               <v-list-item-content>
-                <v-list-item-subtitle>日付 / Date</v-list-item-subtitle>
-                <v-list-item-title>{{format_date_neo4j(application.properties.creation_date)}}</v-list-item-title>
+                <v-list-item-subtitle>{{ $t('Date') }}</v-list-item-subtitle>
+                <v-list-item-title>
+                  {{format_date_neo4j(application.properties.creation_date)}}
+                </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
             <v-list-item two-line>
               <v-list-item-content>
-                <v-list-item-subtitle>申請者 / Applicant</v-list-item-subtitle>
+                <v-list-item-subtitle>{{ $t('Applicant') }}</v-list-item-subtitle>
                 <v-list-item-title>
                   <span>{{application.applicant.properties.display_name}}</span>
                 </v-list-item-title>
@@ -84,15 +87,15 @@
             <v-list-item two-line>
 
               <v-list-item-content v-if="!application.forbidden">
-                <v-list-item-subtitle>申請者のコメント / Applicant comment</v-list-item-subtitle>
+                <v-list-item-subtitle>{{ $t('Applicant comment') }}</v-list-item-subtitle>
                 <v-list-item-title class="application_field_value">
                   {{application.properties.form_data[1].value || "-"}}
-                  </v-list-item-title>
+                </v-list-item-title>
               </v-list-item-content>
 
               <v-list-item-content v-else>
-                <v-list-item-subtitle>申請者内容 / Application content</v-list-item-subtitle>
-                <v-list-item-title>機密 / Confidential</v-list-item-title>
+                <v-list-item-subtitle>{{ $t('Application content') }}</v-list-item-subtitle>
+                <v-list-item-title>{{ $t('Confidential') }}</v-list-item-title>
               </v-list-item-content>
 
             </v-list-item>

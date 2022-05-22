@@ -9,7 +9,7 @@
             <span
               v-bind="attrs"
               v-on="on">
-              ① PDFにハンコを押す
+              ① {{ $t('Stamping PDF') }}
             </span>
             <!-- <span>申請削除 / Delete</span> -->
         </template>
@@ -67,7 +67,7 @@
             v-bind="attrs"
             v-on="on">
             <v-icon>mdi-resize</v-icon>
-            <span>ハンコサイズ / Stamp size</span>
+            <span>{{ $t('Stamp size') }}</span>
 
           </v-btn>
         </template>
@@ -92,7 +92,7 @@
         color="#c00000"
         @click="$emit('reject')">
         <v-icon>mdi-close</v-icon>
-        <span>却下 / Reject</span>
+        <span>{{ $t('Reject') }}</span>
       </v-btn>
 
 
@@ -100,7 +100,7 @@
         text
         @click="download_pdf()">
         <v-icon>mdi-download</v-icon>
-        <span>ダウンロード / Download</span>
+        <span>{{ $t('Download') }}</span>
       </v-btn>
 
 

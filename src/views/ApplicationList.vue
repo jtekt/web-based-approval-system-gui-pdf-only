@@ -12,7 +12,7 @@
         dark
         :to="{name:'new_application'}">
         <v-icon>mdi-plus</v-icon>
-        <span>新規作成 / New submission</span>
+        <span>{{ $t('New application') }}</span>
 
       </v-btn>
 
