@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-card-title class="text-h4">
-      新規作成 / New submission
+      {{ $t('New submission') }}
     </v-card-title>
 
     
@@ -12,7 +12,7 @@
 
         <v-toolbar flat>
           <v-card-title class="mt-2 text-h6">
-            申請内容 / Application content
+            {{ $t('Application content') }}
           </v-card-title>
         </v-toolbar>
 
@@ -21,7 +21,7 @@
             <v-col>
               <v-text-field
                 v-model="title"
-                label="件名 / Application title"/>
+                :label="$t('Title')"/>
             </v-col>
           </v-row>
           <v-row>
@@ -36,14 +36,14 @@
                 close
                 label
                 @click:close="form_data[0].value = null">
-                アップロード完了 / Upload OK
+                {{ $t('Upload OK') }}
               </v-chip>
 
               <v-file-input
                 v-else
                 @change="file_upload($event)"
                 accept="application/pdf"
-                label=".pdf ファイル / .pdf file"/>
+                :label="$t('pdf file')"/>
 
             </v-col>
 
@@ -54,10 +54,7 @@
                   auto-grow
                   rows="1"
                   v-model="form_data[1].value"
-                  label="申請者のコメント / Applicant comments"/>
-              <!-- <v-text-field
-                v-model="form_data[1].value"
-                label="メモ / Comment"/> -->
+                  :label="$t('Applicant comment')"/>
             </v-col>
           </v-row>
         </v-card-text>
@@ -72,7 +69,7 @@
             align="center">
             <v-col cols="auto">
               <v-card-subtitle class="mt-2 text-h6">
-                承認フロー / Approval flow
+                {{ $t('Approval flow') }}
               </v-card-subtitle>
             </v-col>
             <v-spacer />
@@ -89,7 +86,7 @@
                     v-bind="attrs"
                     v-on="on">
                     <v-icon>mdi-account-plus</v-icon>
-                    <span>承認者追加 / Add recipient</span>
+                    <span>{{ $t('Add recipient') }}</span>
 
                   </v-btn>
                 </template>
@@ -97,7 +94,7 @@
 
                 <v-card>
                   <v-card-title class="text-h5">
-                    承認者追加 / Add recipient
+                    {{ $t('Add recipient') }}
                   </v-card-title>
 
                   <v-card-text>
@@ -112,7 +109,7 @@
                   </v-card-text>
 
                   <v-card-text v-else>
-                    承認者が選ばれていません / No recipient selected
+                    {{ $t('No recipient selected') }}
                   </v-card-text>
 
                   <v-card-actions>
@@ -136,7 +133,9 @@
 
             :recipients="recipients" />
         </v-card-text>
-        <v-card-text v-else>承認者を追加してください / Please select the recipients of this application</v-card-text>
+        <v-card-text v-else>
+          {{ $t('Please select the recipients of this application') }}
+        </v-card-text>
       </v-card>
     </v-card-text>
 
@@ -146,7 +145,7 @@
 
         <v-toolbar flat>
           <v-card-subtitle class="mt-2 text-h6">
-            承認手続き / Submission
+            {{ $t('Submission') }}
           </v-card-subtitle>
         </v-toolbar>
 
@@ -159,7 +158,7 @@
             @click="submit()"
             :disabled="!application_valid">
             <v-icon>mdi-send</v-icon>
-            <span>申請書を提出する / Submit application</span>
+            <span>{{ $t('Submit application') }}</span>
 
           </v-btn>
         </v-card-text>
