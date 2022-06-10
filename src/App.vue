@@ -1,27 +1,21 @@
 <template>
-  <AppTemplate
-    :options="options"
-    @user="$store.commit('set_current_user', $event)">
+  <AppTemplate :options="template_options" @user="$store.commit('set_current_user', $event)">
+
+    <template v-slot:header>
+      <v-btn v-if="help_page_url" icon :href="help_page_url" target="_blank">
+        <v-icon>mdi-help-circle-outline</v-icon>
+      </v-btn>
+    </template>
 
     <template v-slot:nav>
-      <v-list
-        dense
-        nav >
+      <v-list dense nav>
         <v-list-item>
           <LocaleSelector />
         </v-list-item>
         <v-divider />
-        <v-list-item
-          v-for="(item, index) in nav"
-          :key="`nav_item_${index}`"
-          :to="item.to"
-          exact>
+        <v-list-item v-for="(item, index) in nav" :key="`nav_item_${index}`" :to="item.to" exact>
 
-          <v-badge
-            inline
-            v-if="item.count"
-            :content="item.count"
-            color="#c00000">
+          <v-badge inline v-if="item.count" :content="item.count" color="#c00000">
 
             <v-list-item-icon>
               <v-icon>{{item.icon}}</v-icon>
@@ -64,7 +58,7 @@ export default {
 
   data(){
     return {
-      options: {
+      template_options: {
         title: "電子捺印システム",
         skip_greetings: process.env.NODE_ENV === 'development',
         login_url: `${process.env.VUE_APP_EMPLOYEE_MANAGER_API_URL}/v2/auth/login`,
@@ -75,6 +69,7 @@ export default {
         main_class: 'grey lighten-4',
         footer_color: 'grey lighten-4',
       },
+      help_page_url: process.env.VUE_APP_HELP_PAGE_URL
 
     }
   },
