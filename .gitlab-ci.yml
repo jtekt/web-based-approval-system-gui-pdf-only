@@ -13,7 +13,7 @@ variables:
 containerization:
   stage: containerization
   tags:
-    - moreillon
+    - x86
   only:
     - master
   script:
@@ -34,7 +34,7 @@ containerization:
 deployment:
   stage: deployment
   tags:
-    - moreillon
+    - x86
   only:
     - master
   script:
