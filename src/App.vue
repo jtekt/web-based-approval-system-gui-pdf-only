@@ -1,5 +1,5 @@
 <template>
-  <AppTemplate :options="template_options" @user="$store.commit('set_current_user', $event)">
+  <AppTemplate :options="template_options" @user="user_changed($event)">
 
     <template v-slot:header>
       <v-btn v-if="help_page_url" icon :href="help_page_url" target="_blank">
@@ -71,6 +71,12 @@ export default {
       },
       help_page_url: process.env.VUE_APP_HELP_PAGE_URL
 
+    }
+  },
+  methods: {
+    user_changed(user){
+      this.$store.commit('set_current_user', user)
+      this.$store.commit('check_pending_applications')
     }
   },
   computed: {
