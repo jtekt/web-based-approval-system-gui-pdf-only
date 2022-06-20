@@ -34,5 +34,20 @@
   "pdf file": ".pdf file",
   "No recipient selected": "No recipient selected",
   "Please select the recipients of this application": "Please select the recipients of this application",
-  "Submit application": "Submit application"
+  "Submit application": "Submit application",
+  "Email banner content": "Email to the next recipient has not been sent yet",
+  "Filters": "Filters",
+  "Hanko ID": "Hanko ID",
+  "Stamp": "Stamp",
+  "From": "From",
+  "To": "To",
+  "Applicant group": "Applicant group",
+  "Relationship": "Relationship",
+  "Approval state": "Approval state",
+  "Add Group": "Add Group",
+  "Any": "Any",
+  "Submitted by you": "Submitted by you",
+  "Submitted to you": "Submitted to you",
+  "Rejected by you": "Rejected by you",
+  "Approved by you": "Approved by you"
 }

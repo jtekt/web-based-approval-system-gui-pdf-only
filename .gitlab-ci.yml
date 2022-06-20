@@ -1,24 +1,27 @@
 stages:
-  - containerization
-  - deployment
+  - build
+  - deploy
 
 variables:
   APPLICATION_NAME: pdf-approval-manager
   CONTAINER_IMAGE: ${DOCKER_HUB_USERNAME}/${APPLICATION_NAME}
-  CONTAINER_IMAGE_TAGGED: ${DOCKER_HUB_USERNAME}/${APPLICATION_NAME}:${CI_COMMIT_SHORT_SHA}
-
+  CONTAINER_IMAGE_TAGGED: ${CONTAINER_IMAGE}:${CI_COMMIT_SHORT_SHA}
   NODEPORT: 32724
 
+image: moreillon/ci-dind:4bca50d7
+services:
+  - name: docker:19.03.12-dind
 
-containerization:
-  stage: containerization
+
+build:
+  stage: build
   tags:
-    - x86
+    - dind
   only:
     - master
-  script:
-    # Docker hub login
+  before_script:
     - echo "${DOCKER_HUB_PASSWORD}" | docker login --username ${DOCKER_HUB_USERNAME} --password-stdin
+  script:
     # Building
     - docker build -t ${CONTAINER_IMAGE} .
     # Tagging
@@ -31,17 +34,14 @@ containerization:
     - docker image rm ${CONTAINER_IMAGE_TAGGED}
 
 
-deployment:
-  stage: deployment
+deploy:
+  stage: deploy
   tags:
-    - x86
+    - dind
   only:
     - master
   script:
-    # create/update the deployment
     - envsubst < kubernetes_manifest.yml | kubectl apply -f -
-    # Pull latest image of deployment
-    - kubectl rollout restart deployment/${APPLICATION_NAME}
 
   environment:
     name: production

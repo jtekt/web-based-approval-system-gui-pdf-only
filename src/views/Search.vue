@@ -1,24 +1,20 @@
 <template>
   <v-card>
-    <v-card-title>検索 / Search</v-card-title>
+    <v-card-title>{{ $t('Search') }}</v-card-title>
     <v-card-text>
       <v-card outlined>
-        <v-card-title>フィルター / Filters</v-card-title>
+        <v-card-title>{{ $t('Filters') }}</v-card-title>
 
         <v-form @submit.prevent="search()">
           <v-card-text>
             <v-row>
               <v-col>
-                <v-text-field
-                  label="ハンコ ID / Hanko ID"
-                  v-model="hanko_id"/>
+                <v-text-field :label="`${$t('Stamp') } ID`" v-model="hanko_id" />
               </v-col>
             </v-row>
             <v-row>
               <v-col>
-                <v-text-field
-                  label="申請 ID / Application ID"
-                  v-model="application_id"/>
+                <v-text-field :label="`${$t('Application') } ID`" v-model="application_id" />
               </v-col>
             </v-row>
             <!-- <v-row>
@@ -31,57 +27,39 @@
             </v-row> -->
             <v-row>
               <v-col>
-                <DatePickerMenu
-                  label="いつから / From"
-                  @selection="start_date = $event"/>
+                <DatePickerMenu :label="$t('From')" @selection="start_date = $event" />
               </v-col>
               <v-col>
-                <DatePickerMenu
-                  label="いつまで / To"
-                  @selection="end_date = $event"/>
+                <DatePickerMenu :label="$t('To')" @selection="end_date = $event" />
               </v-col>
             </v-row>
             <v-row align="center">
-              <v-col cols="auto">
-                申請者のグループ / Applicant group
-              </v-col>
+              <v-col cols="auto">{{ $t('Applicant group')}}</v-col>
               <v-col cols="auto">
 
-                <v-chip
-                  v-if="selected_group"
-                  close
-                  @click:close="selected_group = null">
+                <v-chip v-if="selected_group" close @click:close="selected_group = null">
                   {{selected_group.properties.name}}
                 </v-chip>
 
-                <AddGroupDialog
-                  v-else
-                  @selection="select_group($event)"/>
+                <AddGroupDialog v-else @selection="select_group($event)" />
 
               </v-col>
             </v-row>
             <v-row>
               <v-col>
-                <v-select
-                  label="関係 / Relationship"
-                  :items="relationship_types"
-                  v-model="relationship_type"/>
+                <v-select :label="$t('Relationship')" :items="relationship_types" v-model="relationship_type" />
               </v-col>
             </v-row>
             <v-row>
               <v-col>
-                <v-select
-                  label="承認状態 / Approval state"
-                  :items="approval_states"
-                  v-model="approval_state"/>
+                <v-select :label="$t('Approval state')" :items="approval_states" v-model="approval_state" />
               </v-col>
             </v-row>
             <v-row>
               <v-col>
-                <v-btn
-                  type="submit">
+                <v-btn type="submit">
                   <v-icon>mdi-magnify</v-icon>
-                  <span>検索 / Search</span>
+                  <span>{{ $t('Search') }}</span>
                 </v-btn>
               </v-col>
             </v-row>
@@ -95,17 +73,12 @@
     </v-card-text>
 
     <v-card-text>
-      <v-data-table
-        :loading="loading"
-        :items="applications"
-        :headers="headers"
-        :options.sync="options"
-        :server-items-length="count"
-        @click:row="row_clicked($event)">
+      <v-data-table :loading="loading" :items="applications" :headers="headers" :options.sync="options"
+        :server-items-length="count" @click:row="row_clicked($event)">
 
-      <template v-slot:item.properties.creation_date="{ item }">
-        {{format_date(item.properties.creation_date)}}
-      </template>
+        <template v-slot:item.properties.creation_date="{ item }">
+          {{format_date(item.properties.creation_date)}}
+        </template>
 
       </v-data-table>
     </v-card-text>
@@ -137,12 +110,6 @@ export default {
       applications: [],
       options: {},
 
-      headers: [
-        {text: 'ID', value: 'properties._id'},
-        {text: 'Date', value: 'properties.creation_date'},
-        {text: 'Title', value: 'properties.title'},
-        {text: 'Applicant', value: 'applicant.properties.display_name'},
-      ],
 
       application_types: [],
       application_type: 'PDF',
@@ -152,19 +119,8 @@ export default {
       // Todo: group under filters object
       application_id: null,
       hanko_id: null,
-      relationship_types: [
-        {value: null, text: '何でも / Any'},
-        {value: 'SUBMITTED_BY', text: '出した申請 / Submitted by you'},
-        {value: 'SUBMITTED_TO', text: '受け取った申請 / Submitted to you'},
-        {value: 'REJECTED', text: '却下した申請 / Rejected by you'},
-        {value: 'APPROVED', text: '承認した申請 / Approved by you'},
-      ],
       relationship_type: null,
 
-      approval_states: [
-        {text: '何でも / Any', value: null},
-        {text: '承認完了 / Approved', value: 'approved'},
-      ],
       approval_state: null,
 
       field_labels: [],
@@ -268,6 +224,29 @@ export default {
       if (!this.selected_group) return null
       return this.get_id_of_item(this.selected_group)
     },
+    approval_states(){
+      return [
+        { text: this.$t('Any'), value: null },
+        { text: this.$t('Approved'), value: 'approved' },
+      ]
+    },
+    relationship_types(){
+      return [
+        { value: null, text: this.$t('Any') },
+        { value: 'SUBMITTED_BY', text: this.$t('Submitted by you')},
+        { value: 'SUBMITTED_TO', text: this.$t('Submitted to you')},
+        { value: 'REJECTED', text: this.$t('Rejected by you')},
+        { value: 'APPROVED', text: this.$t('Approved by you')},
+      ]
+    },
+    headers(){
+      return [
+        { text: 'ID', value: 'properties._id' },
+        { text: this.$t('Date'), value: 'properties.creation_date' },
+        { text: this.$t('Title'), value: 'properties.title' },
+        { text: this.$t('Applicant'), value: 'applicant.properties.display_name' },
+      ]
+    }
   }
 }
 </script>

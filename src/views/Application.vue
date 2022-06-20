@@ -46,7 +46,8 @@
         color="red"
         dark
         class="text-center">
-        回覧はメールマークをクリックして作成されたメールを送信してください
+        {{ $t('Email banner content') }}
+        
       </v-banner>
 
       <!-- Application info -->

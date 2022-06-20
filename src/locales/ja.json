@@ -34,5 +34,20 @@
   "pdf file": "PDFファイル",
   "No recipient selected": "承認者が選ばれていません",
   "Please select the recipients of this application": "承認者を追加してください",
-  "Submit application": "申請書を提出する"
+  "Submit application": "申請書を提出する",
+  "Email banner content": "回覧はメールマークをクリックして作成されたメールを送信してください",
+  "Filters": "フィルター",
+  "Hanko ID": "ハンコ ID",
+  "Stamp": "ハンコ",
+  "From": "から",
+  "To": "まで",
+  "Applicant group": "申請者のグループ",
+  "Relationship": "関係",
+  "Approval state": "承認状態",
+  "Add Group": "グループ追加",
+  "Any": "何でも",
+  "Submitted by you": "出した申請",
+  "Approved by you": "承認した申請",
+  "Rejected by you": "却下した申請",
+  "Submitted to you": "受け取った申請"
 }
