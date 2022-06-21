@@ -6,66 +6,41 @@
       <v-tooltip bottom>
         <template v-slot:activator="{ on, attrs }">
 
-            <span
-              v-bind="attrs"
-              v-on="on">
-              ① {{ $t('Stamping PDF') }}
-            </span>
-            <!-- <span>申請削除 / Delete</span> -->
+          <span v-bind="attrs" v-on="on">
+            ① {{ $t('Stamping PDF') }}
+          </span>
+          <!-- <span>申請削除 / Delete</span> -->
         </template>
-        <span>ハンコを押したい所をクリックしてください</span>
+        <span>{{ $t('Click where you want to stamp your seal') }}</span>
       </v-tooltip>
 
 
-      <v-spacer/>
+      <v-spacer />
 
-      <v-btn
-        @click="previous_page()"
-        :disabled="page_number <= 0"
-        icon>
+      <v-btn @click="previous_page()" :disabled="page_number <= 0" icon>
         <v-icon>mdi-arrow-left</v-icon>
       </v-btn>
-      <v-menu
-        open-on-hover
-        offset-y>
+      <v-menu open-on-hover offset-y>
         <template v-slot:activator="{ on, attrs }">
-          <v-btn
-            text
-            v-bind="attrs"
-            v-on="on">
+          <v-btn text v-bind="attrs" v-on="on">
             {{page_number +1}}/{{page_count}}
           </v-btn>
         </template>
         <v-list>
-          <v-list-item
-            v-for="page in Array.from(Array(page_count).keys())"
-            :key="page"
-            @click="page_number = page">
+          <v-list-item v-for="page in Array.from(Array(page_count).keys())" :key="page" @click="page_number = page">
             <v-list-item-title>{{ page+1 }}</v-list-item-title>
           </v-list-item>
         </v-list>
       </v-menu>
-      <v-btn
-        @click="next_page()"
-        :disabled="(page_number+1) >= page_count"
-        icon>
+      <v-btn @click="next_page()" :disabled="(page_number+1) >= page_count" icon>
         <v-icon>mdi-arrow-right</v-icon>
       </v-btn>
 
-      <v-spacer/>
+      <v-spacer />
 
-      <v-menu
-        v-if="current_user_can_stamp"
-        :close-on-content-click="false"
-        open-on-hover
-        offset-y
-        z-index="3">
+      <v-menu v-if="current_user_can_stamp" :close-on-content-click="false" open-on-hover offset-y z-index="3">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn
-            text
-            class="mr-2"
-            v-bind="attrs"
-            v-on="on">
+          <v-btn text class="mr-2" v-bind="attrs" v-on="on">
             <v-icon>mdi-resize</v-icon>
             <span>{{ $t('Stamp size') }}</span>
 
@@ -74,79 +49,50 @@
 
         <v-card>
           <v-sheet class='pt-16 px-5'>
-            <v-slider
-              v-model.number="hanko_scale_slider_value"
-              min="1"
-              max="100"
-              step="2"
-              thumb-label="always"/>
+            <v-slider v-model.number="hanko_scale_slider_value" min="1" max="100" step="2" thumb-label="always" />
           </v-sheet>
 
         </v-card>
 
       </v-menu>
 
-      <v-btn
-        v-if="current_recipient_is_current_user"
-        text
-        color="#c00000"
-        @click="$emit('reject')">
+      <v-btn v-if="current_recipient_is_current_user" text color="#c00000" @click="$emit('reject')">
         <v-icon>mdi-close</v-icon>
         <span>{{ $t('Reject') }}</span>
       </v-btn>
 
 
-      <v-btn
-        text
-        @click="download_pdf()">
+      <v-btn text @click="download_pdf()">
         <v-icon>mdi-download</v-icon>
         <span>{{ $t('Download') }}</span>
       </v-btn>
 
 
     </v-toolbar>
-    <v-divider/>
+    <v-divider />
 
     <template v-if="shown_pdf">
 
-      <div
-        class="pdf_container"
-        ref="pdf_container"
-        @click="pdf_clicked($event)">
+      <div class="pdf_container" ref="pdf_container" @click="pdf_clicked($event)">
 
-        <pdf
-          :src="pdf_src"
-          :page="page_number+1"
-          :rotate="rotation"
-          @num-pages="page_count_event"/>
+        <pdf :src="pdf_src" :page="page_number+1" :rotate="rotation" @num-pages="page_count_event" />
 
         <!-- Used to react to mouse motion over the PDF -->
         <!-- Not sure why it doesn't work when using events on pdf container -->
-        <div
-          class="new_hanko_overlay"
-          @mouseleave="hide_new_hanko()"
-          @mousemove="update_new_hanko_position($event)"/>
+        <div class="new_hanko_overlay" @mouseleave="hide_new_hanko()" @mousemove="update_new_hanko_position($event)" />
 
         <!-- Indicator of where the hanko will be set -->
-        <div
-          v-if="current_user_can_stamp"
-          :style="new_hanko.style"
-          class="new_hanko"/>
+        <div v-if="current_user_can_stamp" :style="new_hanko.style" class="new_hanko" />
 
       </div>
 
     </template>
 
-    <v-progress-linear
-      v-if="loading"
-      indeterminate>
+    <v-progress-linear v-if="loading" indeterminate>
     </v-progress-linear>
 
 
-    <div
-      v-if="load_error"
-      class="red--text text-center pa-5 text-h6"
-      v-html="load_error">
+    <div v-if="load_error" class="red--text text-center pa-5 text-h6" v-html="load_error">
     </div>
 
   </v-card>
@@ -342,11 +288,11 @@ export default {
           x: position_x,
           y: position_y
         },
-        scale: this.hanko_scale
+        scale: this.hanko_scale,
+        date: new Date(),
       }
 
-      const current_user_as_recipient = this.current_user_as_recipient
-      const approval = current_user_as_recipient.approval
+      const approval = this.current_user_as_recipient.approval
       if(!approval) return this.approve_application({attachment_hankos: [new_hanko]})
 
       let attachment_hankos = approval.properties.attachment_hankos
@@ -439,14 +385,15 @@ export default {
 
     load_pdf_hankos () {
 
-      const promises = []
+      // Could use map instead of forEach
+      // const promises = []
 
-      this.application.recipients
+      const promises = this.application.recipients
       .filter(recipient => !!recipient.approval)
       .map(recipient => recipient.approval)
-      .forEach(approval => {
+      .map(approval => {
 
-        const promise = new Promise( (resolve, reject) => {
+        return new Promise( (resolve, reject) => {
 
           // Do nothing if there no hanko to draw for the current approval
           let hankos = approval.properties.attachment_hankos
@@ -474,7 +421,6 @@ export default {
 
               const page = pages[hanko.page_number]
 
-
               // Currently, some hankos have no scale set so allow the scale to be modified using the slider in that case
               const pngDims = pngImage.scale(hanko.scale || this.hanko_scale)
 
@@ -495,17 +441,14 @@ export default {
           .catch(reject)
         })
 
-        promises.push(promise)
       })
 
       // render .pdf once all hankos of all approvals have been drawn
       Promise.all(promises)
-      .then(() =>  this.pdfDoc.save())
-      .then( (saved_pdf) => { this.shown_pdf = saved_pdf} )
-      .catch(error => {
-        console.error(error)
-      })
-      .finally(() => {this.loading = false})
+        .then(() =>  this.pdfDoc.save())
+        .then( (saved_pdf) => { this.shown_pdf = saved_pdf} )
+        .catch(error => { console.error(error) })
+        .finally(() => {this.loading = false})
     },
 
     download_pdf () {
