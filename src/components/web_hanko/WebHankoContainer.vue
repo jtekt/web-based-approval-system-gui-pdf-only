@@ -107,7 +107,7 @@ export default {
       } = this.recipient.properties
 
       if(display_name.length <= 6) return display_name
-      else return last_name
+      else return last_name || display_name
     }
   }
 }
