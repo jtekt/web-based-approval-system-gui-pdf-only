@@ -84,6 +84,7 @@ export default {
     return {
       qr_code_svg: '',
       qr_size: 21,
+      name_font_size: 16
     }
   },
   mounted () {
@@ -93,11 +94,6 @@ export default {
     formatted_name(){
       if(this.name.length <= 6) return this.name
       else return `${this.name.substring(0,6)}...`
-    },
-    name_font_size () {
-      //const max_size = 55
-      //return Math.min(max_size / (0.8*this.name.length), max_size / 2)
-      return 18
     },
     name_y () {
       return 17.5 + 0.5 * this.name_font_size
