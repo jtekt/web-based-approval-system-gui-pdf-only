@@ -1,14 +1,9 @@
 <template lang="html">
-  <v-dialog
-    v-model="help_dialog"
-    width="800">
+  <v-dialog v-model="help_dialog" width="800">
 
     <template v-slot:activator="{ on, attrs }">
-      <v-btn
-        text
-        v-bind="attrs"
-        v-on="on">
-        <v-icon>mdi-information</v-icon>
+      <v-btn text v-bind="attrs" v-on="on">
+        <v-icon left>mdi-information</v-icon>
         <span>Help</span>
       </v-btn>
     </template>
@@ -52,10 +47,7 @@
 
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn
-          color="#c00000"
-          text
-          @click="help_dialog = false">
+        <v-btn color="#c00000" text @click="help_dialog = false">
           Close
         </v-btn>
       </v-card-actions>

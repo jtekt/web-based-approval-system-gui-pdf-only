@@ -3,7 +3,7 @@
 
     <template v-slot:activator="{ on, attrs }">
       <v-btn color="black" dark v-bind="attrs" v-on="on">
-        <v-icon>mdi-account-plus</v-icon>
+        <v-icon left>mdi-account-plus</v-icon>
         <span class="ml-2">{{ $t('Add Group') }}</span>
       </v-btn>
     </template>

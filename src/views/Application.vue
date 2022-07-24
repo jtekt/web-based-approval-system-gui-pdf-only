@@ -1,6 +1,5 @@
 <template>
-  <v-card
-    :loading="loading">
+  <v-card :loading="loading">
 
     <template v-if="application && !loading && !error">
 
@@ -17,20 +16,15 @@
           </v-col>
           <template v-if="user_is_applicant">
             <v-col cols="auto">
-              <v-btn
-                text
+              <v-btn text
                 @click="$router.push({ name: 'new_application', query: { copy_of: get_id_of_item(application) } })">
-                <v-icon>mdi-restore</v-icon>
+                <v-icon left>mdi-restore</v-icon>
                 <span>{{ $t('Re-submit') }}</span>
               </v-btn>
             </v-col>
             <v-col cols="auto">
-              <v-btn
-                text
-                :disabled="application_is_fully_approved"
-                color="#c00000"
-                @click="delete_application()">
-                <v-icon>mdi-delete</v-icon>
+              <v-btn text :disabled="application_is_fully_approved" color="#c00000" @click="delete_application()">
+                <v-icon left>mdi-delete</v-icon>
                 <span>{{ $t('Delete') }}</span>
               </v-btn>
             </v-col>
@@ -40,14 +34,9 @@
       </v-container>
       <v-divider />
 
-      <v-banner
-        v-if="this.$store.state.email_required"
-        single-line
-        color="red"
-        dark
-        class="text-center">
+      <v-banner v-if="this.$store.state.email_required" single-line color="red" dark class="text-center">
         {{ $t('Email banner content') }}
-        
+
       </v-banner>
 
       <!-- Application info -->
@@ -108,15 +97,12 @@
           <v-col>
 
 
-            <div class="approval_flow" >
+            <div class="approval_flow">
 
-              <template
-                v-if="!!user_as_recipient && !current_recipient" >
+              <template v-if="!!user_as_recipient && !current_recipient">
 
                 <div class="flow_applicant">
-                  <EmailButton
-                    :user="application.applicant"
-                    @send_email="send_email_to_applicant()" />
+                  <EmailButton :user="application.applicant" @send_email="send_email_to_applicant()" />
                 </div>
 
                 <div>
@@ -127,20 +113,14 @@
 
               </template>
 
-              <template
-                v-for="(recipient, index) in ordered_recipients" >
+              <template v-for="(recipient, index) in ordered_recipients">
 
-                <div
-                  v-if="index>0"
-                  :key="`flow_arrow_${index}`">
+                <div v-if="index>0" :key="`flow_arrow_${index}`">
                   <v-icon class="mt-16">mdi-arrow-left</v-icon>
                 </div>
 
-                <WebHankoContainer
-                  :key="`recipient_${index}`"
-                  :recipient="recipient"
-                  :application="application"
-                  @send_email="send_email_to_recipient(recipient)"/>
+                <WebHankoContainer :key="`recipient_${index}`" :recipient="recipient" :application="application"
+                  @send_email="send_email_to_recipient(recipient)" />
               </template>
 
 
@@ -148,10 +128,8 @@
 
             </div>
 
-            <RecipientComments
-              v-if="!application.forbidden"
-              :application="application"
-              @comment_updated="get_application()"/>
+            <RecipientComments v-if="!application.forbidden" :application="application"
+              @comment_updated="get_application()" />
 
 
 
@@ -161,19 +139,13 @@
       </v-card-text>
 
       <v-card-text v-if="!application.forbidden">
-        <PdfViewer
-          :application="application"
-          @pdf_stamped="get_application()"
-          @reject="reject_application()"/>
+        <PdfViewer :application="application" @pdf_stamped="get_application()" @reject="reject_application()" />
       </v-card-text>
 
 
     </template>
 
-    <v-card-text
-      v-if="error"
-      style="white-space: pre-line; color: #c00000;"
-      class='text-center text-h6'>
+    <v-card-text v-if="error" style="white-space: pre-line; color: #c00000;" class='text-center text-h6'>
       {{error}}
     </v-card-text>
 

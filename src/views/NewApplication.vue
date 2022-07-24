@@ -4,7 +4,7 @@
       {{ $t('New submission') }}
     </v-card-title>
 
-    
+
 
 
     <v-card-text>
@@ -19,42 +19,26 @@
         <v-card-text>
           <v-row>
             <v-col>
-              <v-text-field
-                v-model="title"
-                :label="$t('Title')"/>
+              <v-text-field v-model="title" :label="$t('Title')" />
             </v-col>
           </v-row>
           <v-row>
             <v-col>
 
-              <v-progress-linear
-                v-if="file_uploading"
-                indeterminate/>
+              <v-progress-linear v-if="file_uploading" indeterminate />
 
-              <v-chip
-                v-else-if="form_data[0].value"
-                close
-                label
-                @click:close="form_data[0].value = null">
+              <v-chip v-else-if="form_data[0].value" close label @click:close="form_data[0].value = null">
                 {{ $t('Upload OK') }}
               </v-chip>
 
-              <v-file-input
-                v-else
-                @change="file_upload($event)"
-                accept="application/pdf"
-                :label="$t('pdf file')"/>
+              <v-file-input v-else @change="file_upload($event)" accept="application/pdf" :label="$t('pdf file')" />
 
             </v-col>
 
           </v-row>
           <v-row>
             <v-col>
-              <v-textarea
-                  auto-grow
-                  rows="1"
-                  v-model="form_data[1].value"
-                  :label="$t('Applicant comment')"/>
+              <v-textarea auto-grow rows="1" v-model="form_data[1].value" :label="$t('Applicant comment')" />
             </v-col>
           </v-row>
         </v-card-text>
@@ -65,8 +49,7 @@
     <v-card-text>
       <v-card outlined>
         <v-toolbar flat>
-          <v-row
-            align="center">
+          <v-row align="center">
             <v-col cols="auto">
               <v-card-subtitle class="mt-2 text-h6">
                 {{ $t('Approval flow') }}
@@ -75,17 +58,11 @@
             <v-spacer />
             <v-col cols="auto">
               <!-- Add recipient dialog, ideally make it a component -->
-              <v-dialog
-                v-model="add_recipient_dialog"
-                width="900">
+              <v-dialog v-model="add_recipient_dialog" width="900">
 
                 <template v-slot:activator="{ on, attrs }">
-                  <v-btn
-                    color="#c00000"
-                    dark
-                    v-bind="attrs"
-                    v-on="on">
-                    <v-icon>mdi-account-plus</v-icon>
+                  <v-btn color="#c00000" dark v-bind="attrs" v-on="on">
+                    <v-icon left>mdi-account-plus</v-icon>
                     <span>{{ $t('Add recipient') }}</span>
 
                   </v-btn>
@@ -98,14 +75,11 @@
                   </v-card-title>
 
                   <v-card-text>
-                    <UserPicker
-                      class="user_picker"
-                      v-on:selection="add_to_recipients($event)"/>
+                    <UserPicker class="user_picker" v-on:selection="add_to_recipients($event)" />
                   </v-card-text>
 
                   <v-card-text v-if="recipients.length">
-                    <NewApplicationApprovalFlow
-                      :recipients="recipients"/>
+                    <NewApplicationApprovalFlow :recipients="recipients" />
                   </v-card-text>
 
                   <v-card-text v-else>
@@ -114,10 +88,7 @@
 
                   <v-card-actions>
                     <v-spacer />
-                    <v-btn
-                      color="#c00000"
-                      text
-                      @click="add_recipient_dialog = false">
+                    <v-btn color="#c00000" text @click="add_recipient_dialog = false">
                       Close
                     </v-btn>
                   </v-card-actions>
@@ -129,9 +100,7 @@
 
 
         <v-card-text v-if="this.recipients.length > 0">
-          <NewApplicationApprovalFlow
-
-            :recipients="recipients" />
+          <NewApplicationApprovalFlow :recipients="recipients" />
         </v-card-text>
         <v-card-text v-else>
           {{ $t('Please select the recipients of this application') }}
@@ -151,13 +120,9 @@
 
 
         <v-card-text class="text-center">
-          <v-btn
-            :loading="submitting"
-            color="#c00000"
-            :dark="application_valid"
-            @click="submit()"
+          <v-btn :loading="submitting" color="#c00000" :dark="application_valid" @click="submit()"
             :disabled="!application_valid">
-            <v-icon>mdi-send</v-icon>
+            <v-icon left>mdi-send</v-icon>
             <span>{{ $t('Submit application') }}</span>
 
           </v-btn>

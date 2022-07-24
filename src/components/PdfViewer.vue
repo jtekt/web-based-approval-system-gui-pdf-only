@@ -41,7 +41,7 @@
       <v-menu v-if="current_user_can_stamp" :close-on-content-click="false" open-on-hover offset-y z-index="3">
         <template v-slot:activator="{ on, attrs }">
           <v-btn text class="mr-2" v-bind="attrs" v-on="on">
-            <v-icon>mdi-resize</v-icon>
+            <v-icon left>mdi-resize</v-icon>
             <span>{{ $t('Stamp size') }}</span>
 
           </v-btn>
@@ -57,13 +57,13 @@
       </v-menu>
 
       <v-btn v-if="current_recipient_is_current_user" text color="#c00000" @click="$emit('reject')">
-        <v-icon>mdi-close</v-icon>
+        <v-icon left>mdi-close</v-icon>
         <span>{{ $t('Reject') }}</span>
       </v-btn>
 
 
       <v-btn text @click="download_pdf()">
-        <v-icon>mdi-download</v-icon>
+        <v-icon left>mdi-download</v-icon>
         <span>{{ $t('Download') }}</span>
       </v-btn>
 

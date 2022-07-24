@@ -58,7 +58,7 @@
             <v-row>
               <v-col>
                 <v-btn type="submit">
-                  <v-icon>mdi-magnify</v-icon>
+                  <v-icon left>mdi-magnify</v-icon>
                   <span>{{ $t('Search') }}</span>
                 </v-btn>
               </v-col>

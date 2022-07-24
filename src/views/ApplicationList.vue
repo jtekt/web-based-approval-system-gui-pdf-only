@@ -2,31 +2,22 @@
   <v-card>
 
     <v-toolbar flat>
-      <v-toolbar-title
-        class="text-h4">
+      <v-toolbar-title class="text-h4">
         {{card_title_lookup[direction]}}
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn
-        color="#c00000"
-        dark
-        :to="{name:'new_application'}">
-        <v-icon>mdi-plus</v-icon>
+      <v-btn color="#c00000" dark :to="{name:'new_application'}">
+        <v-icon left>mdi-plus</v-icon>
         <span>{{ $t('New application') }}</span>
 
       </v-btn>
 
       <template v-slot:extension>
-        <v-tabs
-          color="#444444"
-          v-model="tab"
-          align-with-title>
+        <v-tabs color="#444444" v-model="tab" align-with-title>
 
-          <v-tabs-slider color="#c00000"/>
+          <v-tabs-slider color="#c00000" />
 
-          <v-tab
-            v-for="table in tables[direction]"
-            :key="`tab_${table.state}`">
+          <v-tab v-for="table in tables[direction]" :key="`tab_${table.state}`">
             {{ table.title }}
           </v-tab>
         </v-tabs>
@@ -36,15 +27,10 @@
     <v-divider></v-divider>
 
     <v-tabs-items v-model="tab">
-      <v-tab-item
-        v-for="table in tables[direction]"
-        :key="`tab_item_${table.state}`">
+      <v-tab-item v-for="table in tables[direction]" :key="`tab_item_${table.state}`">
         <v-card-text>
-          <ApplicationListTable
-            :title="table.title"
-            :state="table.state"
-            :headers="table.headers"
-            :direction="direction"/>
+          <ApplicationListTable :title="table.title" :state="table.state" :headers="table.headers"
+            :direction="direction" />
         </v-card-text>
       </v-tab-item>
     </v-tabs-items>
