@@ -6,7 +6,7 @@
       target="_blank"
       :href="user_profile_url"
       class="hanko_container_header">
-      {{ recipient_displayed_name}}
+      {{ recipient_displayed_name }}
     </a>
 
     <div class="hanko_area">
@@ -16,7 +16,7 @@
         v-if="recipient.approval"
         :name="recipient_displayed_name"
         :approvalId="get_id_of_item(recipient.approval)"
-        :date="recipient.approval.properties.date"/>
+        :date="recipient.approval.date"/>
 
 
 
@@ -72,7 +72,7 @@ export default {
       if(this.application.recipients.find(recipient => recipient.refusal)) return null
       return this.application.recipients
       .slice()
-      .sort((a, b) => a.submission.properties.flow_index - b.submission.properties.flow_index)
+      .sort((a, b) => a.submission.flow_index - b.submission.flow_index)
       .find(recipient => !recipient.approval && !recipient.refusal)
     },
     recipient_id(){
@@ -104,7 +104,7 @@ export default {
       const {
         last_name,
         display_name
-      } = this.recipient.properties
+      } = this.recipient
 
       if(display_name.length <= 6) return display_name
       else return last_name || display_name

@@ -4,7 +4,7 @@
 
     <template v-if="decision">
       <v-list-item-content>
-        <v-list-item-subtitle>{{recipient.properties.display_name}}</v-list-item-subtitle>
+        <v-list-item-subtitle>{{recipient.display_name}}</v-list-item-subtitle>
         <v-list-item-title>
           <v-textarea
             v-if="editing"
@@ -84,7 +84,7 @@ export default {
 
       if (!this.recipient_is_user) return
       const decision_id = this.get_id_of_item(this.decision)
-      const url = `${process.env.VUE_APP_SHINSEI_MANAGER_URL}/decisions/${decision_id}/comment`
+      const url = `/v1/decisions/${decision_id}/comment`
       const body = { comment: this.new_comment || "No comment" }
       this.axios.put(url, body)
         .then(() => {
@@ -112,7 +112,7 @@ export default {
 
     recipient_comment(){
       if(!this.decision) return null
-      return this.decision.properties.comment || 'コメント無し / No comment'
+      return this.decision.comment || 'コメント無し / No comment'
 
     },
   }

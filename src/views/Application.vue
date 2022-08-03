@@ -7,7 +7,7 @@
 
         <v-row align="center">
           <v-col cols="auto">
-            <v-toolbar-title v-if="application">{{ application.properties.title }}</v-toolbar-title>
+            <v-toolbar-title v-if="application">{{ application.title }}</v-toolbar-title>
             <v-toolbar-title v-else>{{ $t('Application') }}</v-toolbar-title>
           </v-col>
           <v-spacer />
@@ -47,7 +47,7 @@
             <v-list-item two-line>
               <v-list-item-content>
                 <v-list-item-subtitle>{{ $t('Title') }}</v-list-item-subtitle>
-                <v-list-item-title>{{application.properties.title}}</v-list-item-title>
+                <v-list-item-title>{{application.title}}</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
             <v-list-item two-line>
@@ -60,7 +60,7 @@
               <v-list-item-content>
                 <v-list-item-subtitle>{{ $t('Date') }}</v-list-item-subtitle>
                 <v-list-item-title>
-                  {{format_date_neo4j(application.properties.creation_date)}}
+                  {{format_date_neo4j(application.creation_date)}}
                 </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
@@ -68,7 +68,7 @@
               <v-list-item-content>
                 <v-list-item-subtitle>{{ $t('Applicant') }}</v-list-item-subtitle>
                 <v-list-item-title>
-                  <span>{{application.applicant.properties.display_name}}</span>
+                  <span>{{application.applicant.display_name}}</span>
                 </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
@@ -79,7 +79,7 @@
               <v-list-item-content v-if="!application.forbidden">
                 <v-list-item-subtitle>{{ $t('Applicant comment') }}</v-list-item-subtitle>
                 <v-list-item-title class="application_field_value">
-                  {{application.properties.form_data[1].value || "-"}}
+                  {{application.form_data[1].value || "-"}}
                 </v-list-item-title>
               </v-list-item-content>
 
@@ -202,13 +202,13 @@
         this.loading = true
         this.application = null
         this.error = null
-        const url = `${process.env.VUE_APP_SHINSEI_MANAGER_URL}/v1/applications/${this.application_id}`
+        const url = `/v2/applications/${this.application_id}`
 
         this.axios.get(url)
           .then(({data}) => {
             this.application = data
             if(!this.application.forbidden) {
-              this.application.properties.form_data = JSON.parse(this.application.properties.form_data)
+              this.application.form_data = JSON.parse(this.application.form_data)
             }
           })
           .catch((error) => {
@@ -231,7 +231,7 @@
       reject_application(){
         if(!confirm(`却下しますか? / Reject application?`)) return
 
-        const url = `${process.env.VUE_APP_SHINSEI_MANAGER_URL}/applications/${this.application_id}/reject`
+        const url = `/v2/applications/${this.application_id}/reject`
 
         this.axios.post(url)
         .then(() => {
@@ -244,7 +244,7 @@
       },
       delete_application(){
         if(!confirm("本申請を削除致しますか？")) return
-        const url = `${process.env.VUE_APP_SHINSEI_MANAGER_URL}/v1/applications/${this.application_id}`
+        const url = `/v2/applications/${this.application_id}`
         this.axios.delete(url)
         .then( () => {
           this.$router.push({name: 'submitted_applications'})
@@ -269,14 +269,14 @@
 
         // Weird formatting because preserves indentation
 
-        const email_body = `${recipient.properties.display_name} 様
+        const email_body = `${recipient.display_name} 様
 
 電子捺印システムの通知メールです。
 
 申請を提出しました。
 
-申請者: ${this.application.applicant.properties.display_name}
-件名: ${this.application.properties.title}
+申請者: ${this.application.applicant.display_name}
+件名: ${this.application.title}
 提出先URL: ${window.location.origin}/applications/${this.get_id_of_item(this.application)}
 
 ※IEでは動作しません。Edge (Chromium)/Firefox/GoogleChromeをご使用ください。
@@ -284,8 +284,8 @@
 
 確認お願いします。`
 
-      const email_string = `mailto:${recipient.properties.email_address}
-?subject=[電子捺印システム] ${this.application.properties.title}
+      const email_string = `mailto:${recipient.email_address}
+?subject=[電子捺印システム] ${this.application.title}
 &body=${encodeURIComponent(email_body)}`
 
         window.location.href = email_string
@@ -296,14 +296,14 @@
         this.$store.commit('require_email', false)
         // Weird formatting because preserves indentation
 
-        const email_body = `${this.application.applicant.properties.display_name} 様
+        const email_body = `${this.application.applicant.display_name} 様
 
 電子捺印システムの通知メールです。
 
 申請の承認が${this.application_is_rejected ? '却下' : '完了'}されました。
 
-申請者: ${this.application.applicant.properties.display_name}
-件名: ${this.application.properties.title}
+申請者: ${this.application.applicant.display_name}
+件名: ${this.application.title}
 提出先URL: ${window.location.origin}/applications/${this.get_id_of_item(this.application)}
 
 ※IEでは動作しません。Edge (Chromium)/Firefox/GoogleChromeをご使用ください。
@@ -311,8 +311,8 @@
 
 確認お願いします。`
 
-        const email_string = `mailto:${this.application.applicant.properties.email_address}
-  ?subject=[電子捺印システム] ${this.application.properties.title}
+        const email_string = `mailto:${this.application.applicant.email_address}
+  ?subject=[電子捺印システム] ${this.application.title}
   &body=${encodeURIComponent(email_body)}`
 
         window.location.href = email_string
@@ -325,7 +325,7 @@
       ordered_recipients(){
         return this.application.recipients
           .slice()
-          .sort((a, b) => b.submission.properties.flow_index - a.submission.properties.flow_index)
+          .sort((a, b) => b.submission.flow_index - a.submission.flow_index)
       },
       current_recipient(){
         // recipients sorted by flow index apparently
@@ -333,7 +333,7 @@
 
         return this.application.recipients
         .slice()
-        .sort((a, b) => a.submission.properties.flow_index - b.submission.properties.flow_index)
+        .sort((a, b) => a.submission.flow_index - b.submission.flow_index)
         .find(recipient => !recipient.approval && !recipient.refusal)
       },
       user_as_recipient(){

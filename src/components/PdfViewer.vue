@@ -173,7 +173,7 @@ export default {
       if (this.page_number > 0) this.page_number--
     },
     get_file_name(file_id){
-      const url = `${process.env.VUE_APP_SHINSEI_MANAGER_URL}/applications/${this.application_id}/files/${file_id}/filename`
+      const url = `/v1/applications/${this.application_id}/files/${file_id}/filename`
 
       this.axios.get(url)
       .then(({data}) => { this.filename = data.filename })
@@ -204,7 +204,7 @@ export default {
 
       // Load the file as an arrayBuffer
       // Note: could be done using axios
-      const file_url = `${process.env.VUE_APP_SHINSEI_MANAGER_URL}/applications/${this.application_id}/files/${file_id}`
+      const file_url = `/applications/${this.application_id}/files/${file_id}`
       const axios_options = { responseType: 'arraybuffer' }
 
       this.axios.get(file_url, axios_options)
@@ -295,7 +295,7 @@ export default {
       const approval = this.current_user_as_recipient.approval
       if(!approval) return this.approve_application({attachment_hankos: [new_hanko]})
 
-      let attachment_hankos = approval.properties.attachment_hankos
+      let attachment_hankos = approval.attachment_hankos
       if(!attachment_hankos) attachment_hankos = []
       if (typeof attachment_hankos === 'string') {
         attachment_hankos = JSON.parse(attachment_hankos)
@@ -308,7 +308,7 @@ export default {
     },
 
     approve_application(body){
-      const url = `${process.env.VUE_APP_SHINSEI_MANAGER_URL}/applications/${this.application_id}/approve`
+      const url = `/v1/applications/${this.application_id}/approve`
       this.axios.post(url, body)
       .then(() => {
         this.$emit('pdf_stamped')
@@ -321,7 +321,7 @@ export default {
     },
 
     update_hankos(approval_id, body){
-      const url = `${process.env.VUE_APP_SHINSEI_MANAGER_URL}/approvals/${approval_id}/attachment_hankos`
+      const url = `/v1/approvals/${approval_id}/attachment_hankos`
 
       this.axios.put(url, body)
       .then(() => {
@@ -396,7 +396,7 @@ export default {
         return new Promise( (resolve, reject) => {
 
           // Do nothing if there no hanko to draw for the current approval
-          let hankos = approval.properties.attachment_hankos
+          let hankos = approval.attachment_hankos
           if (!hankos) return resolve()
 
           if (typeof hankos === 'string') hankos = JSON.parse(hankos)
@@ -484,7 +484,7 @@ export default {
     },
     file_id(){
       // Maybe not ideal
-      const found_field = this.application.properties.form_data
+      const found_field = this.application.form_data
         .find(field => field.type === "pdf" || field.type === "file")
       return found_field.value
     },
@@ -499,7 +499,7 @@ export default {
 
       return this.application.recipients
         .slice()
-        .sort((a, b) => a.submission.properties.flow_index - b.submission.properties.flow_index)
+        .sort((a, b) => a.submission.flow_index - b.submission.flow_index)
         .find(recipient => !recipient.approval && !recipient.refusal)
     },
     current_recipient_is_current_user(){
@@ -524,10 +524,10 @@ export default {
       if(this.application_has_refusal) return false
 
       const current_flow_index = this.current_recipient
-        ? this.current_recipient.submission.properties.flow_index
+        ? this.current_recipient.submission.flow_index
         : this.application.recipients.length
 
-      const current_user_flow_index = this.current_user_as_recipient.submission.properties.flow_index
+      const current_user_flow_index = this.current_user_as_recipient.submission.flow_index
       return current_user_flow_index <= current_flow_index
     },
     hanko_scale(){
