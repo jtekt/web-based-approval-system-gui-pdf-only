@@ -185,7 +185,7 @@ export default {
       }
 
 
-      this.axios.post(`/applications`, body)
+      this.axios.post(`/v2/applications`, body)
       .then(({ data }) => {
         this.$store.commit('require_email', true)
         const application_id = this.get_id_of_item(data)
@@ -221,10 +221,8 @@ export default {
     recreate_application_content () {
       // This function is called when the application is a dubplicate of an existing one
 
-      // NOTE: NO CONFIDENTIALITY FOR NOW!
-
       const application_id = this.$route.query.copy_of
-      this.axios.get(`/v1/applications/${application_id}`)
+      this.axios.get(`/v2/applications/${application_id}`)
       .then(({ data: original_application }) => {
 
         const {

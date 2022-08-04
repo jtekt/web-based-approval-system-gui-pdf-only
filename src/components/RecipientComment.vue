@@ -81,10 +81,8 @@ export default {
       this.editing = false
     },
     update_comment () {
-
       if (!this.recipient_is_user) return
-      const decision_id = this.get_id_of_item(this.decision)
-      const url = `/v1/decisions/${decision_id}/comment`
+      const url = `/v2/applications/${this.application_id}/comment`
       const body = { comment: this.new_comment || "No comment" }
       this.axios.put(url, body)
         .then(() => {
@@ -103,6 +101,9 @@ export default {
 
   },
   computed: {
+    application_id() {
+      return this.$route.params.application_id
+    },
     recipient_is_user () {
       return this.get_id_of_item(this.recipient) === this.current_user_id
     },

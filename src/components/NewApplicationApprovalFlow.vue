@@ -1,27 +1,20 @@
 <template>
-  <draggable
-    class="approval_flow"
-    :list="recipients">
+  <draggable class="approval_flow" :list="recipients">
 
     <!--Need to have arrow and recipient in the same div because of draggable -->
-    <div
-      class="flow_item"
-      v-for="(recipient, index) in recipients"
-      :key="`flow_member_${index}`">
+    <div class="flow_item" v-for="(recipient, index) in recipients" :key="`flow_member_${index}`">
 
-      <v-icon
-        class="mx-2"
-        v-if="index>0">
+      <v-icon class="mx-2" v-if="index>0">
         mdi-arrow-right
       </v-icon>
 
-      <v-chip
-        close
-        label
-        @click:close="delete_recipient(index)">
-        {{recipient.properties.display_name
+      <v-chip close label @click:close="delete_recipient(index)">
+        {{recipient.display_name
+        || recipient.name_kanji
+        || recipient.full_name
+        || recipient.properties.display_name
         || recipient.properties.name_kanji
-        || recipient.properties.full_name}}
+        || recipient.properties.full_name }}
       </v-chip>
 
 

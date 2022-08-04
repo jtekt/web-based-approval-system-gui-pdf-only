@@ -173,7 +173,8 @@ export default {
       if (this.page_number > 0) this.page_number--
     },
     get_file_name(file_id){
-      const url = `/v1/applications/${this.application_id}/files/${file_id}/filename`
+      // Only used when downloading file
+      const url = `/v2/applications/${this.application_id}/files/${file_id}/filename`
 
       this.axios.get(url)
       .then(({data}) => { this.filename = data.filename })
@@ -204,7 +205,7 @@ export default {
 
       // Load the file as an arrayBuffer
       // Note: could be done using axios
-      const file_url = `/applications/${this.application_id}/files/${file_id}`
+      const file_url = `/v2/applications/${this.application_id}/files/${file_id}`
       const axios_options = { responseType: 'arraybuffer' }
 
       this.axios.get(file_url, axios_options)
@@ -302,13 +303,12 @@ export default {
       }
       attachment_hankos.push(new_hanko)
 
-      const approval_id = this.get_id_of_item(approval)
-      this.update_hankos(approval_id, {attachment_hankos})
+      this.update_hankos({attachment_hankos})
 
     },
 
     approve_application(body){
-      const url = `/v1/applications/${this.application_id}/approve`
+      const url = `/v2/applications/${this.application_id}/approve`
       this.axios.post(url, body)
       .then(() => {
         this.$emit('pdf_stamped')
@@ -320,8 +320,8 @@ export default {
       })
     },
 
-    update_hankos(approval_id, body){
-      const url = `/v1/approvals/${approval_id}/attachment_hankos`
+    update_hankos(body){
+      const url = `/v2/applications/${this.application_id}/hankos`
 
       this.axios.put(url, body)
       .then(() => {
@@ -402,9 +402,10 @@ export default {
           if (typeof hankos === 'string') hankos = JSON.parse(hankos)
 
           const approval_id = this.get_id_of_item(approval)
-          const png_url = this.get_hanko_blob_url_from_id(`hanko_${approval_id}`)
+          const hanko_id = `hanko_${approval_id}`
+          const png_url = this.get_hanko_blob_url_from_id(hanko_id)
 
-          const axios_options = { responseType: 'arraybuffer' }
+          const axios_options = { responseType: 'arraybuffer', baseURL: null }
 
           this.axios.get(png_url, axios_options)
           .then( ({data}) => this.pdfDoc.embedPng(data) )
