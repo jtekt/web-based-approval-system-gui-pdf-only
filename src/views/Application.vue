@@ -155,205 +155,162 @@
 </template>
 
 <script>
-  import HelpDialog from '@/components/HelpDialog.vue'
-  import IdUtils from '@/mixins/IdUtils.js'
+import HelpDialog from '@/components/HelpDialog.vue'
+import IdUtils from '@/mixins/IdUtils.js'
 
-  import WebHankoContainer from '@/components/web_hanko/WebHankoContainer.vue'
-  import EmailButton from '@/components/EmailButton.vue'
-  import PdfViewer from '@/components/PdfViewer.vue'
-  import RecipientComments from '@/components/RecipientComments.vue'
+import WebHankoContainer from '@/components/web_hanko/WebHankoContainer.vue'
+import EmailButton from '@/components/EmailButton.vue'
+import PdfViewer from '@/components/PdfViewer.vue'
+import RecipientComments from '@/components/RecipientComments.vue'
 
-  export default {
-    name: 'Application',
+import {
+  generate_email_to_recipient,
+  generate_email_to_applicant,
+} from '@/emails'
 
-    components: {
-      WebHankoContainer,
-      PdfViewer,
-      RecipientComments,
-      EmailButton,
-      HelpDialog,
-    },
-    mixins: [
-      IdUtils
-    ],
-    data(){
-      return {
-        help_dialog: false,
-        application: null,
-        loading: false,
-        error: null,
-      }
-    },
-    mounted(){
-      this.get_application()
-    },
-    beforeRouteLeave(to, from, next) {
-      const email_required = this.$store.state.email_required
-      if(email_required){
-        if(confirm(`メール未送信なのにページから出ますか？`)) {
-          this.$store.commit('require_email', false)
-          next()
-        }
-      }
-      else next()
-    },
-    methods: {
-      get_application(){
-        this.loading = true
-        this.application = null
-        this.error = null
-        const url = `/v2/applications/${this.application_id}`
+export default {
+  name: 'Application',
 
-        this.axios.get(url)
-          .then(({data}) => {
-            this.application = data
-            if(!this.application.forbidden) {
-              this.application.form_data = JSON.parse(this.application.form_data)
-            }
-          })
-          .catch((error) => {
-            if(error.response) {
-              console.error(error.response.data)
-              if(error.response.status === 404) {
-                this.error = `アイテム${this.application_id}見つけれませんでした
-                Item ${this.application_id} not found`
-              }
-              console.log(error.response.status)
-            }
-            else {
-              console.error(error)
-            }
-          })
-          .finally(() => {
-            this.loading = false
-          })
-      },
-      reject_application(){
-        if(!confirm(`却下しますか? / Reject application?`)) return
-
-        const url = `/v2/applications/${this.application_id}/reject`
-
-        this.axios.post(url)
-        .then(() => {
-          this.get_application()
-        })
-        .catch((error) => {
-          console.error(error)
-          alert(`Error approving application`)
-        })
-      },
-      delete_application(){
-        if(!confirm("本申請を削除致しますか？")) return
-        const url = `/v2/applications/${this.application_id}`
-        this.axios.delete(url)
-        .then( () => {
-          this.$router.push({name: 'submitted_applications'})
-        })
-        .catch((error) => {
-          if(error.response) console.error(error.response.data)
-          else console.error(error)
-        })
-      },
-      format_date_neo4j(date){
-        return `${date.year}/${date.month}/${date.day}`
-      },
-      email_button_clicked(){
-
-        if(this.current_recipient) this.send_email_to_recipient(this.current_recipient)
-        else this.send_email_to_applicant()
-      },
-
-      send_email_to_recipient (recipient) {
-
-        this.$store.commit('require_email', false)
-
-        // Weird formatting because preserves indentation
-
-        const email_body = `${recipient.display_name} 様
-
-電子捺印システムの通知メールです。
-
-申請を提出しました。
-
-申請者: ${this.application.applicant.display_name}
-件名: ${this.application.title}
-提出先URL: ${window.location.origin}/applications/${this.get_id_of_item(this.application)}
-
-※IEでは動作しません。Edge (Chromium)/Firefox/GoogleChromeをご使用ください。
-※詳しくは ${window.location.origin}/info
-
-確認お願いします。`
-
-      const email_string = `mailto:${recipient.email_address}
-?subject=[電子捺印システム] ${this.application.title}
-&body=${encodeURIComponent(email_body)}`
-
-        window.location.href = email_string
-
-      },
-      send_email_to_applicant () {
-
-        this.$store.commit('require_email', false)
-        // Weird formatting because preserves indentation
-
-        const email_body = `${this.application.applicant.display_name} 様
-
-電子捺印システムの通知メールです。
-
-申請の承認が${this.application_is_rejected ? '却下' : '完了'}されました。
-
-申請者: ${this.application.applicant.display_name}
-件名: ${this.application.title}
-提出先URL: ${window.location.origin}/applications/${this.get_id_of_item(this.application)}
-
-※IEでは動作しません。Edge (Chromium)/Firefox/GoogleChromeをご使用ください。
-※詳しくは ${window.location.origin}/info
-
-確認お願いします。`
-
-        const email_string = `mailto:${this.application.applicant.email_address}
-  ?subject=[電子捺印システム] ${this.application.title}
-  &body=${encodeURIComponent(email_body)}`
-
-        window.location.href = email_string
-      },
-    },
-    computed: {
-      application_id(){
-        return this.$route.params.application_id
-      },
-      ordered_recipients(){
-        return this.application.recipients
-          .slice()
-          .sort((a, b) => b.submission.flow_index - a.submission.flow_index)
-      },
-      current_recipient(){
-        // recipients sorted by flow index apparently
-        if(this.application.recipients.find(recipient => recipient.refusal)) return null
-
-        return this.application.recipients
-        .slice()
-        .sort((a, b) => a.submission.flow_index - b.submission.flow_index)
-        .find(recipient => !recipient.approval && !recipient.refusal)
-      },
-      user_as_recipient(){
-        return this.application.recipients.find(recipient => this.get_id_of_item(recipient) === this.current_user_id)
-      },
-      application_is_rejected(){
-        return !!this.application.recipients.find(recipient => recipient.refusal)
-      },
-      application_is_fully_approved(){
-        const recipient_count = this.application.recipients.length
-        const approval_count = this.application.recipients.reduce((acc, recipient) => acc + (recipient.approval ? 1 : 0), 0)
-        return approval_count === recipient_count
-      },
-      user_is_applicant () {
-        return this.get_id_of_item(this.application.applicant) === this.current_user_id
-      },
-
-
+  components: {
+    WebHankoContainer,
+    PdfViewer,
+    RecipientComments,
+    EmailButton,
+    HelpDialog,
+  },
+  mixins: [
+    IdUtils
+  ],
+  data(){
+    return {
+      help_dialog: false,
+      application: null,
+      loading: false,
+      error: null,
     }
+  },
+  mounted(){
+    this.get_application()
+  },
+  beforeRouteLeave(to, from, next) {
+    const email_required = this.$store.state.email_required
+    if(email_required){
+      if(confirm(`メール未送信なのにページから出ますか？`)) {
+        this.$store.commit('require_email', false)
+        next()
+      }
+    }
+    else next()
+  },
+  methods: {
+    get_application(){
+      this.loading = true
+      this.application = null
+      this.error = null
+      const url = `/v2/applications/${this.application_id}`
+
+      this.axios.get(url)
+        .then(({data}) => {
+          this.application = data
+          if(!this.application.forbidden) {
+            this.application.form_data = JSON.parse(this.application.form_data)
+          }
+        })
+        .catch((error) => {
+          if(error.response) {
+            console.error(error.response.data)
+            if(error.response.status === 404) {
+              this.error = `アイテム${this.application_id}見つけれませんでした
+              Item ${this.application_id} not found`
+            }
+            console.log(error.response.status)
+          }
+          else {
+            console.error(error)
+          }
+        })
+        .finally(() => {
+          this.loading = false
+        })
+    },
+    reject_application(){
+      if(!confirm(`却下しますか? / Reject application?`)) return
+
+      const url = `/v2/applications/${this.application_id}/reject`
+
+      this.axios.post(url)
+      .then(() => {
+        this.get_application()
+      })
+      .catch((error) => {
+        console.error(error)
+        alert(`Error approving application`)
+      })
+    },
+    delete_application(){
+      if(!confirm("本申請を削除致しますか？")) return
+      const url = `/v2/applications/${this.application_id}`
+      this.axios.delete(url)
+      .then( () => {
+        this.$router.push({name: 'submitted_applications'})
+      })
+      .catch((error) => {
+        if(error.response) console.error(error.response.data)
+        else console.error(error)
+      })
+    },
+    format_date_neo4j(date){
+      return `${date.year}/${date.month}/${date.day}`
+    },
+    email_button_clicked(){
+      if(this.current_recipient) this.send_email_to_recipient(this.current_recipient)
+      else this.send_email_to_applicant()
+    },
+    send_email_to_recipient (recipient) {
+      this.$store.commit('require_email', false)
+      window.location.href = generate_email_to_recipient(this.application, recipient)
+    },
+    send_email_to_applicant () {
+      this.$store.commit('require_email', false)
+      window.location.href = generate_email_to_applicant(this.application)
+    },
+  },
+  computed: {
+    application_id(){
+      return this.$route.params.application_id
+    },
+    ordered_recipients(){
+      return this.application.recipients
+        .slice()
+        .sort((a, b) => b.submission.flow_index - a.submission.flow_index)
+    },
+    current_recipient(){
+      // recipients sorted by flow index apparently
+      if(this.application.recipients.find(recipient => recipient.refusal)) return null
+
+      return this.application.recipients
+      .slice()
+      .sort((a, b) => a.submission.flow_index - b.submission.flow_index)
+      .find(recipient => !recipient.approval && !recipient.refusal)
+    },
+    user_as_recipient(){
+      return this.application.recipients.find(recipient => this.get_id_of_item(recipient) === this.current_user_id)
+    },
+    application_is_rejected(){
+      return !!this.application.recipients.find(recipient => recipient.refusal)
+    },
+    application_is_fully_approved(){
+      const recipient_count = this.application.recipients.length
+      const approval_count = this.application.recipients.reduce((acc, recipient) => acc + (recipient.approval ? 1 : 0), 0)
+      return approval_count === recipient_count
+    },
+    user_is_applicant () {
+      return this.get_id_of_item(this.application.applicant) === this.current_user_id
+    },
+
+
   }
+}
 </script>
 
 <style>
