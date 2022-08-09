@@ -227,7 +227,8 @@ export default {
         })
     },
     reject_application(){
-      if(!confirm(`却下しますか? / Reject application?`)) return
+      const confirm_message = this.$t('Reject application')
+      if (!confirm(confirm_message)) return
 
       const url = `/v2/applications/${this.application_id}/reject`
 
@@ -241,7 +242,8 @@ export default {
       })
     },
     delete_application(){
-      if(!confirm("本申請を削除致しますか？")) return
+      const confirm_message = this.$t('Delete this application form')
+      if (!confirm(confirm_message)) return
       const url = `/v2/applications/${this.application_id}`
       this.axios.delete(url)
       .then( () => {

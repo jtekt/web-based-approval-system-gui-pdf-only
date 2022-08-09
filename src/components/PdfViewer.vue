@@ -263,7 +263,8 @@ export default {
     async pdf_clicked (event) {
 
       if(!this.current_user_can_stamp) return
-      if (!confirm(`Apply Hanko here?`)) return
+      const confirm_message = this.$t('Apply stamp here')
+      if (!confirm(confirm_message)) return
 
       this.save_hanko_size()
 

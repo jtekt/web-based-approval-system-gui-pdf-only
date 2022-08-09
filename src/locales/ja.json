@@ -53,5 +53,8 @@
   "Click where you want to stamp your seal": "ハンコを押したい所をクリックしてください",
   "Recipient comments": "捺印者のコメント",
   "Start from scratch": "やり直し",
-  "Resubmission of": "再申請"
+  "Resubmission of": "再申請",
+  "Apply stamp here": "ここにハンコをおしますか？",
+  "Delete this application form": "本申請を削除致しますか？",
+  "Reject application": "却下しますか? "
 }
