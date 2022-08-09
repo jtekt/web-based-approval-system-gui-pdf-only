@@ -17,6 +17,18 @@
         </v-toolbar>
 
         <v-card-text>
+          <v-row v-if="$route.query.copy_of" align="center">
+            <v-col cols="auto">
+              {{ $t('Resubmission of') }} {{ $route.query.copy_of }}
+            </v-col>
+            <v-col cols="auto">
+              <v-btn outlined small exact :to="{name: 'new_application'}">
+                {{ $t('Start from scratch')}}
+              </v-btn>
+            </v-col>
+          </v-row>
+
+
           <v-row>
             <v-col>
               <v-text-field v-model="title" :label="$t('Title')" />
@@ -172,6 +184,19 @@ export default {
   mounted () {
     if (this.$route.query.copy_of) this.recreate_application_content()
   },
+  watch: {
+    copy_of() {
+      if (!this.$route.query.copy_of) {
+        this.recipients = []
+        this.title = ''
+        this.form_data = [
+          { type: 'pdf', label: 'file', value: null },
+          { type: 'text', label: 'memo', value: '' },
+        ]
+      }
+    }
+  },
+
   methods: {
     submit(){
       this. submitting = true
@@ -252,7 +277,11 @@ export default {
   computed: {
     application_valid(){
       return this.title !== '' && this.form_data[0].value && this.recipients.length > 0
+    },
+    copy_of() {
+      return this.$route.query.copy_of
     }
+
   }
 }
 </script>
