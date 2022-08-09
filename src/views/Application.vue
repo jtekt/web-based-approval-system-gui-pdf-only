@@ -109,8 +109,6 @@
                   <v-icon class="mt-16">mdi-arrow-left</v-icon>
                 </div>
 
-
-
               </template>
 
               <template v-for="(recipient, index) in ordered_recipients">
@@ -123,15 +121,10 @@
                   @send_email="send_email_to_recipient(recipient)" />
               </template>
 
-
-
-
             </div>
 
             <RecipientComments v-if="!application.forbidden" :application="application"
               @comment_updated="get_application()" />
-
-
 
           </v-col>
         </v-row>
