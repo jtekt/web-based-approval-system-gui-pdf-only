@@ -17,6 +17,18 @@
         </v-toolbar>
 
         <v-card-text>
+          <v-row v-if="$route.query.copy_of" align="center">
+            <v-col cols="auto">
+              {{ $t('Resubmission of') }} {{ $route.query.copy_of }}
+            </v-col>
+            <v-col cols="auto">
+              <v-btn outlined small exact :to="{name: 'new_application'}">
+                {{ $t('Start from scratch')}}
+              </v-btn>
+            </v-col>
+          </v-row>
+
+
           <v-row>
             <v-col>
               <v-text-field v-model="title" :label="$t('Title')" />
@@ -172,11 +184,22 @@ export default {
   mounted () {
     if (this.$route.query.copy_of) this.recreate_application_content()
   },
+  watch: {
+    copy_of() {
+      if (!this.$route.query.copy_of) {
+        this.recipients = []
+        this.title = ''
+        this.form_data = [
+          { type: 'pdf', label: 'file', value: null },
+          { type: 'text', label: 'memo', value: '' },
+        ]
+      }
+    }
+  },
+
   methods: {
     submit(){
       this. submitting = true
-
-      const url = `${process.env.VUE_APP_SHINSEI_MANAGER_URL}/applications`
 
       const body = {
         title: this.title,
@@ -187,7 +210,7 @@ export default {
       }
 
 
-      this.axios.post(url, body)
+      this.axios.post(`/v2/applications`, body)
       .then(({ data }) => {
         this.$store.commit('require_email', true)
         const application_id = this.get_id_of_item(data)
@@ -203,11 +226,11 @@ export default {
       this.file_uploading = true
       let formData = new FormData()
       formData.append('file_to_upload', file)
-      this.axios.post(`${process.env.VUE_APP_SHINSEI_MANAGER_URL}/files`, formData, {
+      this.axios.post(`/v2/files`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       })
       .then(({data}) => {
-        this.form_data[0].value = data
+        this.form_data[0].value = data.file_id
        })
       .catch(error => alert(error.response.data))
       .finally(() => { this.file_uploading = false })
@@ -223,28 +246,27 @@ export default {
     recreate_application_content () {
       // This function is called when the application is a dubplicate of an existing one
 
-      // NOTE: NO CONFIDENTIALITY FOR NOW!
-
       const application_id = this.$route.query.copy_of
-      const url = `${process.env.VUE_APP_SHINSEI_MANAGER_URL}/v1/applications/${application_id}`
-      this.axios.get(url)
-      .then(({data}) => {
+      this.axios.get(`/v2/applications/${application_id}`)
+      .then(({ data: original_application }) => {
+
+        const {
+          title,
+          private: confidential, // renaming becuase private is reserved
+          form_data,
+          recipients,
+        } = original_application
 
 
-        const original_application = data
 
         // Set application details back
-        this.title = original_application.properties.title
-        this.confidential = original_application.properties.private
-
-        original_application.properties.form_data = JSON.parse(original_application.properties.form_data)
-        this.form_data = original_application.properties.form_data
+        this.title = title
+        this.confidential = confidential
+        this.form_data = JSON.parse(form_data)
 
 
         // Recreate flow
-        this.recipients = original_application.recipients.sort((a, b) => {
-          return a.submission.properties.flow_index - b.submission.properties.flow_index
-        })
+        this.recipients = recipients.sort((a, b) => a.submission.flow_index - b.submission.flow_index )
 
       })
       .catch((error) => {
@@ -255,7 +277,11 @@ export default {
   computed: {
     application_valid(){
       return this.title !== '' && this.form_data[0].value && this.recipients.length > 0
+    },
+    copy_of() {
+      return this.$route.query.copy_of
     }
+
   }
 }
 </script>

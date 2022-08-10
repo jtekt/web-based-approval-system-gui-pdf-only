@@ -9,11 +9,6 @@
     :server-items-length="application_count"
     @click:row="row_clicked($event)">
 
-    <!-- <template v-slot:top>
-      <v-toolbar flat>
-        <v-toolbar-title>{{title}}</v-toolbar-title>
-      </v-toolbar>
-    </template> -->
 
     <template
       v-slot:body
@@ -21,8 +16,8 @@
       <div class="error_message">An error occured while loading data</div>
     </template>
 
-    <template v-slot:item.properties.creation_date="{ item }">
-      <span>{{format_date_neo4j(item.properties.creation_date)}}</span>
+    <template v-slot:item.creation_date="{ item }">
+      <span>{{format_date_neo4j(item.creation_date)}}</span>
     </template>
 
     <template v-slot:item.progress="{ item }">
@@ -47,7 +42,7 @@ export default {
       type: Array,
       default(){
         return [
-          { text: 'Title', value: 'properties.title' },
+          { text: 'Title', value: 'title' },
         ]
       }
     }
@@ -108,9 +103,8 @@ export default {
         state: this.state,
       }
 
-      const url = `${process.env.VUE_APP_SHINSEI_MANAGER_URL}/v1/applications`
 
-      this.axios.get(url, {params})
+      this.axios.get(`/v2/applications`, {params})
       .then( ({data}) => {
         this.applications = data.applications
         this.application_count = data.count
@@ -121,7 +115,7 @@ export default {
 
           application.current_recipient = application.recipients
             .slice()
-            .sort((a, b) => a.submission.properties.flow_index - b.submission.properties.flow_index)
+            .sort((a, b) => a.submission.flow_index - b.submission.flow_index)
             .find(recipient => !recipient.approval)
 
           application.progress = 100 * application.recipients.filter(recipient => recipient.approval).length / application.recipients.length
