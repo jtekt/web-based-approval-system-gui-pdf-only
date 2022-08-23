@@ -17,7 +17,7 @@ const generate_email_to_recipient_body = (application, recipient) =>
 
 const generate_email_to_recipient = (application, recipient) =>
     `mailto:${recipient.email_address}
-?subject=[申請マネージャ] ${application.type}
+?subject=[電子捺印システム] ${application.title}
 &body=${encodeURIComponent(generate_email_to_recipient_body(application, recipient))}`
 
 const generate_email_to_applicant_body = (application) =>
@@ -35,7 +35,7 @@ const generate_email_to_applicant_body = (application) =>
 
 const generate_email_to_applicant = (application) =>
     `mailto:${application.applicant.email_address}
-?subject=[申請マネージャ] ${application.type}
+?subject=[電子捺印システム] ${application.title}
 &body=${encodeURIComponent(generate_email_to_applicant_body(application))}`
 
 export {
