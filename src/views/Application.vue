@@ -263,6 +263,7 @@ export default {
     },
     send_email_to_recipient (recipient) {
       this.$store.commit('require_email', false)
+      console.log(this.application)
       window.location.href = generate_email_to_recipient(this.application, recipient)
     },
     send_email_to_applicant () {
