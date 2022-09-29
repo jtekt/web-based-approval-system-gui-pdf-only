@@ -4,7 +4,7 @@ const application_is_rejected = (application) => {
 
 const generate_email_to_recipient_body = (application, recipient) => {
 
-    const applicant_comment = application.form_data[1].value
+    // const applicant_comment = application.form_data[1].value
 
     return `${recipient.display_name} 様
 
@@ -15,7 +15,6 @@ const generate_email_to_recipient_body = (application, recipient) => {
 申請者: ${application.applicant.display_name}
 件名: ${application.title}
 提出先URL: ${window.location.origin}/applications/${application._id}
-申請者のコメント: ${applicant_comment}
 
 確認お願いします。`
 }
