@@ -28,7 +28,7 @@
             </v-col>
           </v-row>
 
-
+          <!-- Form data -->
           <v-row>
             <v-col>
               <v-text-field v-model="title" :label="$t('Title')" />
@@ -36,17 +36,8 @@
           </v-row>
           <v-row>
             <v-col>
-
-              <v-progress-linear v-if="file_uploading" indeterminate />
-
-              <v-chip v-else-if="form_data[0].value" close label @click:close="form_data[0].value = null">
-                {{ $t('Upload OK') }}
-              </v-chip>
-
-              <v-file-input v-else @change="file_upload($event)" accept="application/pdf" :label="$t('pdf file')" />
-
+              <FileUpload v-model="form_data[0].value" accept="application/pdf" :label="$t('pdf file')" />
             </v-col>
-
           </v-row>
           <v-row>
             <v-col>
@@ -155,6 +146,7 @@
 import UserPicker from '@moreillon/vue_user_picker'
 import NewApplicationApprovalFlow from '@/components/NewApplicationApprovalFlow.vue'
 import IdUtils from '@/mixins/IdUtils.js'
+import FileUpload from '@/components/FileUpload.vue'
 
 export default {
   name: 'NewApplication',
@@ -180,6 +172,7 @@ export default {
   components: {
     UserPicker,
     NewApplicationApprovalFlow,
+    FileUpload
   },
   mounted () {
     if (this.$route.query.copy_of) this.recreate_application_content()
