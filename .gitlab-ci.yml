@@ -21,7 +21,7 @@ build:
     - dind
   only:
     - master
-    before_script:
+  before_script:
     # Registry login
     - aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${AWS_ECR_PUBLIC_URL}
     # Create repository in ECR if it does not exist yet
