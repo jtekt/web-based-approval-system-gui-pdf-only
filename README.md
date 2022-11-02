@@ -7,7 +7,7 @@ This is a simplified GUI for Shinsei-manager which is designed to only handle ap
 | Variable  | Description |
 | ---  | --- |
 | VUE_APP_SHINSEI_MANAGER_URL  | URL of the Shinsei-manager API |
-| VUE_APP_EMPLOYEE_MANAGER_API_URL_PLACEHOLDER | URL of the employee management service API |
+| VUE_APP_EMPLOYEE_MANAGER_API_URL | URL of the employee management service API |
 | VUE_APP_EMPLOYEE_MANAGER_FRONT_URL | URL of the employee management service GUI |
-| VUE_APP_GROUP_MANAGER_API_URL_PLACEHOLDER | URL of the group management service API |
+| VUE_APP_GROUP_MANAGER_API_URL | URL of the group management service API |
 
