@@ -69,8 +69,11 @@ export default {
         profile_url: `${process.env.VUE_APP_EMPLOYEE_MANAGER_FRONT_URL}/employees/self`,
 
         homepage_url: process.env.VUE_APP_HOMEPAGE_URL,
-        main_class: 'grey lighten-4',
-        footer_color: 'grey lighten-4',
+
+        header_logo: require('@/assets/jtekt_logo.jpg'),
+        colors: { app_bar: '#000' },
+        author: 'JTEKT Corporation',
+
       },
       help_page_url: process.env.VUE_APP_HELP_PAGE_URL
 
@@ -96,3 +99,9 @@ export default {
 
 }
 </script>
+
+<style>
+.header_logo {
+  border-right: 1px solid white;
+}
+</style>
