@@ -70,7 +70,8 @@ export default {
 
         homepage_url: process.env.VUE_APP_HOMEPAGE_URL,
 
-        header_logo: require('@/assets/jtekt_logo.jpg'),
+        header_logo: require('@/assets/jtekt_logo_negative.jpg'),
+        authentication_logo: require('@/assets/jtekt_logo.jpg'),
         colors: { app_bar: '#000' },
         author: 'JTEKT Corporation',
 
