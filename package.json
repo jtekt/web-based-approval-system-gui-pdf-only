@@ -20,7 +20,7 @@
     "vue": "^2.6.11",
     "vue-axios": "^3.4.1",
     "vue-i18n": "^8.26.3",
-    "vue-pdf": "^4.0.0",
+    "vue-pdf": "^4.3.0",
     "vue-router": "^3.5.4",
     "vuedraggable": "^2.24.3",
     "vuetify": "^2.6.6",

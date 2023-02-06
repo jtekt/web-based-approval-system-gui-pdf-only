@@ -1,14 +1,13 @@
 <template>
   <v-card :loading="loading">
-
     <template v-if="application && !loading && !error">
-
       <v-container fluid>
-
         <v-row align="center">
           <v-col cols="auto">
-            <v-toolbar-title v-if="application">{{ application.title }}</v-toolbar-title>
-            <v-toolbar-title v-else>{{ $t('Application') }}</v-toolbar-title>
+            <v-toolbar-title v-if="application">{{
+              application.title
+            }}</v-toolbar-title>
+            <v-toolbar-title v-else>{{ $t("Application") }}</v-toolbar-title>
           </v-col>
           <v-spacer />
           <v-col cols="auto">
@@ -16,153 +15,171 @@
           </v-col>
           <template v-if="user_is_applicant">
             <v-col cols="auto">
-              <v-btn text
-                @click="$router.push({ name: 'new_application', query: { copy_of: get_id_of_item(application) } })">
+              <v-btn
+                text
+                @click="
+                  $router.push({
+                    name: 'new_application',
+                    query: { copy_of: get_id_of_item(application) },
+                  })
+                "
+              >
                 <v-icon left>mdi-restore</v-icon>
-                <span>{{ $t('Re-submit') }}</span>
+                <span>{{ $t("Re-submit") }}</span>
               </v-btn>
             </v-col>
             <v-col cols="auto">
-              <v-btn text :disabled="application_is_fully_approved" color="#c00000" @click="delete_application()">
+              <v-btn
+                text
+                :disabled="application_is_fully_approved"
+                color="#c00000"
+                @click="delete_application()"
+              >
                 <v-icon left>mdi-delete</v-icon>
-                <span>{{ $t('Delete') }}</span>
+                <span>{{ $t("Delete") }}</span>
               </v-btn>
             </v-col>
           </template>
         </v-row>
-
       </v-container>
       <v-divider />
 
-      <v-banner v-if="this.$store.state.email_required" single-line color="red" dark class="text-center">
-        {{ $t('Email banner content') }}
-
+      <v-banner
+        v-if="this.$store.state.email_required"
+        single-line
+        color="red"
+        dark
+        class="text-center"
+      >
+        {{ $t("Email banner content") }}
       </v-banner>
 
       <!-- Application info -->
       <v-card-text>
         <v-row>
-
           <v-col>
             <v-list-item two-line>
               <v-list-item-content>
-                <v-list-item-subtitle>{{ $t('Title') }}</v-list-item-subtitle>
-                <v-list-item-title>{{application.title}}</v-list-item-title>
+                <v-list-item-subtitle>{{ $t("Title") }}</v-list-item-subtitle>
+                <v-list-item-title>{{ application.title }}</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
             <v-list-item two-line>
               <v-list-item-content>
                 <v-list-item-subtitle>ID</v-list-item-subtitle>
-                <v-list-item-title>{{get_id_of_item(application)}}</v-list-item-title>
+                <v-list-item-title>{{
+                  get_id_of_item(application)
+                }}</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
             <v-list-item two-line>
               <v-list-item-content>
-                <v-list-item-subtitle>{{ $t('Date') }}</v-list-item-subtitle>
+                <v-list-item-subtitle>{{ $t("Date") }}</v-list-item-subtitle>
                 <v-list-item-title>
-                  {{format_date_neo4j(application.creation_date)}}
+                  {{ format_date_neo4j(application.creation_date) }}
                 </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
             <v-list-item two-line>
               <v-list-item-content>
-                <v-list-item-subtitle>{{ $t('Applicant') }}</v-list-item-subtitle>
+                <v-list-item-subtitle>{{
+                  $t("Applicant")
+                }}</v-list-item-subtitle>
                 <v-list-item-title>
-                  <span>{{application.applicant.display_name}}</span>
+                  <span>{{ application.applicant.display_name }}</span>
                 </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
 
             <!-- Application content, i.e. comment -->
             <v-list-item two-line>
-
               <v-list-item-content v-if="!application.forbidden">
-                <v-list-item-subtitle>{{ $t('Applicant comment') }}</v-list-item-subtitle>
+                <v-list-item-subtitle>{{
+                  $t("Applicant comment")
+                }}</v-list-item-subtitle>
                 <v-list-item-title class="application_field_value">
-                  {{application.form_data[1].value || "-"}}
+                  {{ application.form_data[1].value || "-" }}
                 </v-list-item-title>
               </v-list-item-content>
 
               <v-list-item-content v-else>
-                <v-list-item-subtitle>{{ $t('Application content') }}</v-list-item-subtitle>
-                <v-list-item-title>{{ $t('Confidential') }}</v-list-item-title>
+                <v-list-item-subtitle>{{
+                  $t("Application content")
+                }}</v-list-item-subtitle>
+                <v-list-item-title>{{ $t("Confidential") }}</v-list-item-title>
               </v-list-item-content>
-
             </v-list-item>
-
-
           </v-col>
 
           <!-- Approval flow -->
           <v-col>
-
-
             <div class="approval_flow">
-
               <template v-if="!!user_as_recipient && !current_recipient">
-
                 <div class="flow_applicant">
-                  <EmailButton :user="application.applicant" @send_email="send_email_to_applicant()" />
+                  <EmailButton
+                    :application="application"
+                    :user="application.applicant"
+                    @send_email="send_email_to_applicant()"
+                  />
                 </div>
 
                 <div>
                   <v-icon class="mt-16">mdi-arrow-left</v-icon>
                 </div>
-
               </template>
 
               <template v-for="(recipient, index) in ordered_recipients">
-
-                <div v-if="index>0" :key="`flow_arrow_${index}`">
+                <div v-if="index > 0" :key="`flow_arrow_${index}`">
                   <v-icon class="mt-16">mdi-arrow-left</v-icon>
                 </div>
 
-                <WebHankoContainer :key="`recipient_${index}`" :recipient="recipient" :application="application"
-                  @send_email="send_email_to_recipient(recipient)" />
+                <WebHankoContainer
+                  :key="`recipient_${index}`"
+                  :recipient="recipient"
+                  :application="application"
+                />
               </template>
-
             </div>
 
-            <RecipientComments v-if="!application.forbidden" :application="application"
-              @comment_updated="get_application()" />
-
+            <RecipientComments
+              v-if="!application.forbidden"
+              :application="application"
+              @comment_updated="get_application()"
+            />
           </v-col>
         </v-row>
-
       </v-card-text>
 
       <v-card-text v-if="!application.forbidden">
-        <PdfViewer :application="application" @pdf_stamped="get_application()" @reject="reject_application()" />
+        <PdfViewer
+          :application="application"
+          @pdf_stamped="get_application()"
+          @reject="reject_application()"
+        />
       </v-card-text>
-
-
     </template>
 
-    <v-card-text v-if="error" style="white-space: pre-line; color: #c00000;" class='text-center text-h6'>
-      {{error}}
+    <v-card-text
+      v-if="error"
+      style="white-space: pre-line; color: #c00000"
+      class="text-center text-h6"
+    >
+      {{ error }}
     </v-card-text>
-
-
-
   </v-card>
 </template>
 
 <script>
-import HelpDialog from '@/components/HelpDialog.vue'
-import IdUtils from '@/mixins/IdUtils.js'
+import HelpDialog from "@/components/application/HelpDialog.vue"
+import IdUtils from "@/mixins/IdUtils.js"
 
-import WebHankoContainer from '@/components/web_hanko/WebHankoContainer.vue'
-import EmailButton from '@/components/EmailButton.vue'
-import PdfViewer from '@/components/PdfViewer.vue'
-import RecipientComments from '@/components/RecipientComments.vue'
-
-import {
-  generate_email_to_recipient,
-  generate_email_to_applicant,
-} from '@/emails'
+import WebHankoContainer from "@/components/application/web_hanko/WebHankoContainer.vue"
+import EmailButton from "@/components/application/EmailButton.vue"
+import PdfViewer from "@/components/application/PdfViewer.vue"
+import RecipientComments from "@/components/application/RecipientComments.vue"
 
 export default {
-  name: 'Application',
+  name: "Application",
 
   components: {
     WebHankoContainer,
@@ -171,10 +188,8 @@ export default {
     EmailButton,
     HelpDialog,
   },
-  mixins: [
-    IdUtils
-  ],
-  data(){
+  mixins: [IdUtils],
+  data() {
     return {
       help_dialog: false,
       application: null,
@@ -182,43 +197,42 @@ export default {
       error: null,
     }
   },
-  mounted(){
+  mounted() {
     this.get_application()
   },
   beforeRouteLeave(to, from, next) {
     const email_required = this.$store.state.email_required
-    if(email_required){
-      if(confirm(`メール未送信なのにページから出ますか？`)) {
-        this.$store.commit('require_email', false)
+    if (email_required) {
+      if (confirm(`メール未送信なのにページから出ますか？`)) {
+        this.$store.commit("require_email", false)
         next()
       }
-    }
-    else next()
+    } else next()
   },
   methods: {
-    get_application(){
+    get_application() {
       this.loading = true
       this.application = null
       this.error = null
       const url = `/v2/applications/${this.application_id}`
 
-      this.axios.get(url)
-        .then(({data}) => {
+      this.axios
+        .get(url)
+        .then(({ data }) => {
           this.application = data
-          if(!this.application.forbidden) {
+          if (!this.application.forbidden) {
             this.application.form_data = JSON.parse(this.application.form_data)
           }
         })
         .catch((error) => {
-          if(error.response) {
+          if (error.response) {
             console.error(error.response.data)
-            if(error.response.status === 404) {
+            if (error.response.status === 404) {
               this.error = `アイテム${this.application_id}見つけれませんでした
               Item ${this.application_id} not found`
             }
             console.log(error.response.status)
-          }
-          else {
+          } else {
             console.error(error)
           }
         })
@@ -226,85 +240,83 @@ export default {
           this.loading = false
         })
     },
-    reject_application(){
-      const confirm_message = this.$t('Reject application')
+    reject_application() {
+      const confirm_message = this.$t("Reject application")
       if (!confirm(confirm_message)) return
 
       const url = `/v2/applications/${this.application_id}/reject`
 
-      this.axios.post(url)
-      .then(() => {
-        this.get_application()
-      })
-      .catch((error) => {
-        console.error(error)
-        alert(`Error approving application`)
-      })
+      this.axios
+        .post(url)
+        .then(() => {
+          this.get_application()
+        })
+        .catch((error) => {
+          console.error(error)
+          alert(`Error approving application`)
+        })
     },
-    delete_application(){
-      const confirm_message = this.$t('Delete this application form')
+    delete_application() {
+      const confirm_message = this.$t("Delete this application form")
       if (!confirm(confirm_message)) return
       const url = `/v2/applications/${this.application_id}`
-      this.axios.delete(url)
-      .then( () => {
-        this.$router.push({name: 'submitted_applications'})
-      })
-      .catch((error) => {
-        if(error.response) console.error(error.response.data)
-        else console.error(error)
-      })
+      this.axios
+        .delete(url)
+        .then(() => {
+          this.$router.push({ name: "submitted_applications" })
+        })
+        .catch((error) => {
+          if (error.response) console.error(error.response.data)
+          else console.error(error)
+        })
     },
-    format_date_neo4j(date){
+    format_date_neo4j(date) {
       return `${date.year}/${date.month}/${date.day}`
-    },
-    email_button_clicked(){
-      if(this.current_recipient) this.send_email_to_recipient(this.current_recipient)
-      else this.send_email_to_applicant()
-    },
-    send_email_to_recipient (recipient) {
-      this.$store.commit('require_email', false)
-      window.location.href = generate_email_to_recipient(this.application, recipient)
-    },
-    send_email_to_applicant () {
-      this.$store.commit('require_email', false)
-      window.location.href = generate_email_to_applicant(this.application)
     },
   },
   computed: {
-    application_id(){
+    application_id() {
       return this.$route.params.application_id
     },
-    ordered_recipients(){
+    ordered_recipients() {
       return this.application.recipients
         .slice()
         .sort((a, b) => b.submission.flow_index - a.submission.flow_index)
     },
-    current_recipient(){
+    current_recipient() {
       // recipients sorted by flow index apparently
-      if(this.application.recipients.find(recipient => recipient.refusal)) return null
+      if (this.application.recipients.find((recipient) => recipient.refusal))
+        return null
 
       return this.application.recipients
-      .slice()
-      .sort((a, b) => a.submission.flow_index - b.submission.flow_index)
-      .find(recipient => !recipient.approval && !recipient.refusal)
+        .slice()
+        .sort((a, b) => a.submission.flow_index - b.submission.flow_index)
+        .find((recipient) => !recipient.approval && !recipient.refusal)
     },
-    user_as_recipient(){
-      return this.application.recipients.find(recipient => this.get_id_of_item(recipient) === this.current_user_id)
+    user_as_recipient() {
+      return this.application.recipients.find(
+        (recipient) => this.get_id_of_item(recipient) === this.current_user_id
+      )
     },
-    application_is_rejected(){
-      return !!this.application.recipients.find(recipient => recipient.refusal)
+    application_is_rejected() {
+      return !!this.application.recipients.find(
+        (recipient) => recipient.refusal
+      )
     },
-    application_is_fully_approved(){
+    application_is_fully_approved() {
       const recipient_count = this.application.recipients.length
-      const approval_count = this.application.recipients.reduce((acc, recipient) => acc + (recipient.approval ? 1 : 0), 0)
+      const approval_count = this.application.recipients.reduce(
+        (acc, recipient) => acc + (recipient.approval ? 1 : 0),
+        0
+      )
       return approval_count === recipient_count
     },
-    user_is_applicant () {
-      return this.get_id_of_item(this.application.applicant) === this.current_user_id
+    user_is_applicant() {
+      return (
+        this.get_id_of_item(this.application.applicant) === this.current_user_id
+      )
     },
-
-
-  }
+  },
 }
 </script>
 
@@ -318,11 +330,11 @@ export default {
   flex-wrap: wrap-reverse;
 }
 
-.comments{
+.comments {
   margin-top: 3em;
 }
 
-.flow_applicant{
+.flow_applicant {
   width: 80px;
   display: flex;
   justify-content: center;
@@ -330,8 +342,7 @@ export default {
   height: 150px;
 }
 
-.application_field_value{
+.application_field_value {
   white-space: pre-line;
 }
-
 </style>

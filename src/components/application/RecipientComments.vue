@@ -1,53 +1,45 @@
 <template>
   <div class="comments">
-    <v-subheader>{{ $t('Recipient comments')}}</v-subheader>
+    <v-subheader>{{ $t("Recipient comments") }}</v-subheader>
 
-    <RecipientComment v-for="(recipient, index) in ordered_recipients" :key="`comment_${index}`" :recipient="recipient"
-      @comment_updated="$emit('comment_updated')" />
-
-
-
+    <RecipientComment
+      v-for="(recipient, index) in ordered_recipients"
+      :key="`comment_${index}`"
+      :recipient="recipient"
+      @comment_updated="$emit('comment_updated')"
+    />
   </div>
 </template>
 
 <script>
-
-import RecipientComment from '@/components/RecipientComment.vue'
-import IdUtils from '@/mixins/IdUtils.js'
+import RecipientComment from "@/components/application/RecipientComment.vue"
+import IdUtils from "@/mixins/IdUtils.js"
 
 export default {
-  name: 'RecipientComments',
+  name: "RecipientComments",
   props: {
-    application: Object
+    application: Object,
   },
   components: {
-    RecipientComment
+    RecipientComment,
   },
-  mixins: [
-    IdUtils
-  ],
-  methods: {
-
-  },
+  mixins: [IdUtils],
+  methods: {},
   computed: {
-    ordered_recipients(){
+    ordered_recipients() {
       return this.application.recipients
         .slice()
         .sort((a, b) => b.submission.flow_index - a.submission.flow_index)
     },
-
-
-  }
-
+  },
 }
 </script>
 
 <style scoped>
-
 .comments_header {
   font-weight: bold;
 }
-.rejection_reasons{
+.rejection_reasons {
   margin: 15px;
 }
 
@@ -71,7 +63,5 @@ export default {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-
 }
-
 </style>
