@@ -13,16 +13,18 @@ spec:
         app: ${APPLICATION_NAME}
     spec:
       containers:
-      - name: ${APPLICATION_NAME}
-        image: ${CONTAINER_IMAGE_TAGGED}
-        ports:
-        - containerPort: 80
-        envFrom:
-        - secretRef:
-           name: environment-variables
-        env:
-        - name: VUE_APP_HELP_PAGE_URL
-          value: http://rdmc.jtekt.local:30081/denshi-natsuin/
+        - name: ${APPLICATION_NAME}
+          image: ${CONTAINER_IMAGE_TAGGED}
+          ports:
+            - containerPort: 80
+          envFrom:
+            - secretRef:
+                name: environment-variables
+          env:
+            - name: VUE_APP_HELP_PAGE_URL
+              value: http://rdmc.jtekt.local:30081/denshi-natsuin/
+            - name: VUE_APP_HOMEPAGE_URL
+              value: http://10.115.1.100:30003/
 ---
 apiVersion: v1
 kind: Service
@@ -33,5 +35,5 @@ spec:
   selector:
     app: ${APPLICATION_NAME}
   ports:
-  - port: 80
-    nodePort: ${NODEPORT}
+    - port: 80
+      nodePort: ${NODEPORT}
