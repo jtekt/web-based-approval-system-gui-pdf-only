@@ -23,8 +23,6 @@ spec:
           env:
             - name: VUE_APP_HELP_PAGE_URL
               value: http://rdmc.jtekt.local:30081/denshi-natsuin/
-            - name: VUE_APP_HOMEPAGE_URL
-              value: http://10.115.1.100:30003/
 ---
 apiVersion: v1
 kind: Service
