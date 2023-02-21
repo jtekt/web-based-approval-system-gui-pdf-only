@@ -1,6 +1,5 @@
 <template>
   <AppTemplate :options="template_options" @user="user_changed($event)">
-
     <template v-slot:header>
       <v-btn v-if="help_page_url" icon :href="help_page_url" target="_blank">
         <v-icon>mdi-help-circle-outline</v-icon>
@@ -13,54 +12,57 @@
           <LocaleSelector />
         </v-list-item>
         <v-divider />
-        <v-list-item v-for="(item, index) in nav" :key="`nav_item_${index}`" :to="item.to" exact>
-
-          <v-badge inline v-if="item.count" :content="item.count" color="#c00000">
-
+        <v-list-item
+          v-for="(item, index) in nav"
+          :key="`nav_item_${index}`"
+          :to="item.to"
+          exact
+        >
+          <v-badge
+            inline
+            v-if="item.count"
+            :content="item.count"
+            color="#c00000"
+          >
             <v-list-item-icon>
-              <v-icon>{{item.icon}}</v-icon>
+              <v-icon>{{ item.icon }}</v-icon>
             </v-list-item-icon>
             <v-list-item-content>
-              <v-list-item-title>{{item.title}}</v-list-item-title>
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
             </v-list-item-content>
           </v-badge>
 
           <template v-else>
             <v-list-item-icon>
-              <v-icon>{{item.icon}}</v-icon>
+              <v-icon>{{ item.icon }}</v-icon>
             </v-list-item-icon>
             <v-list-item-content>
-              <v-list-item-title>{{item.title}}</v-list-item-title>
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
             </v-list-item-content>
           </template>
-
-
-
         </v-list-item>
       </v-list>
     </template>
-
   </AppTemplate>
 </template>
 
 <script>
-import AppTemplate from '@moreillon/vue_application_template_vuetify'
-import LocaleSelector from './components/LocaleSelector.vue'
+import AppTemplate from "@moreillon/vue_application_template_vuetify"
+import LocaleSelector from "./components/LocaleSelector.vue"
 
 export default {
-  name: 'App',
+  name: "App",
 
   components: {
     AppTemplate,
-    LocaleSelector
+    LocaleSelector,
   },
 
-
-  data(){
+  data() {
     return {
       template_options: {
         title: "電子捺印システム",
-        skip_greetings: process.env.NODE_ENV === 'development',
+        skip_greetings: process.env.NODE_ENV === "development",
 
         login_url: process.env.VUE_APP_LOGIN_URL,
         identification_url: process.env.VUE_APP_IDENTIFICATION_URL,
@@ -70,34 +72,52 @@ export default {
 
         homepage_url: process.env.VUE_APP_HOMEPAGE_URL,
 
-        header_logo: require('@/assets/jtekt_logo_negative.jpg'),
-        authentication_logo: require('@/assets/jtekt_logo.jpg'),
-        colors: { app_bar: '#000' },
-        author: 'JTEKT Corporation',
-
+        header_logo: require("@/assets/jtekt_logo_negative.jpg"),
+        authentication_logo: require("@/assets/jtekt_logo.jpg"),
+        colors: { app_bar: "#000" },
+        author: "Maxime Moreillon - JTEKT Corporation",
       },
-      help_page_url: process.env.VUE_APP_HELP_PAGE_URL
-
+      help_page_url: process.env.VUE_APP_HELP_PAGE_URL,
     }
   },
   methods: {
-    user_changed(user){
-      this.$store.commit('set_current_user', user)
-      this.$store.commit('check_pending_applications')
-    }
+    user_changed(user) {
+      this.$store.commit("set_current_user", user)
+      this.$store.commit("check_pending_applications")
+    },
   },
   computed: {
-    nav(){
+    nav() {
       return [
-        {title: this.$t('New application'), to: {name: 'new_application'}, icon: 'mdi-plus'},
-        {title: this.$t('Outbox'), to: {name: 'submitted_applications'}, icon: 'mdi-inbox-arrow-up'},
-        {title: this.$t('Inbox'), to: {name: 'received_applications'}, icon: 'mdi-inbox-arrow-down', count: this.$store.state.received_pending_application_count},
-        {title: this.$t('Search'), to: {name: 'search'}, icon: 'mdi-magnify'},
-        {title: this.$t('About'), to: {name: 'about'}, icon: 'mdi-information-outline'},
+        {
+          title: this.$t("New application"),
+          to: { name: "new_application" },
+          icon: "mdi-plus",
+        },
+        {
+          title: this.$t("Outbox"),
+          to: { name: "submitted_applications" },
+          icon: "mdi-inbox-arrow-up",
+        },
+        {
+          title: this.$t("Inbox"),
+          to: { name: "received_applications" },
+          icon: "mdi-inbox-arrow-down",
+          count: this.$store.state.received_pending_application_count,
+        },
+        {
+          title: this.$t("Search"),
+          to: { name: "search" },
+          icon: "mdi-magnify",
+        },
+        {
+          title: this.$t("About"),
+          to: { name: "about" },
+          icon: "mdi-information-outline",
+        },
       ]
-    }
-  }
-
+    },
+  },
 }
 </script>
 
