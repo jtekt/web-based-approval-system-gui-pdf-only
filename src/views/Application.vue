@@ -214,7 +214,7 @@ export default {
       this.loading = true
       this.application = null
       this.error = null
-      const url = `/v2/applications/${this.application_id}`
+      const url = `/applications/${this.application_id}`
 
       this.axios
         .get(url)
@@ -244,7 +244,7 @@ export default {
       const confirm_message = this.$t("Reject application")
       if (!confirm(confirm_message)) return
 
-      const url = `/v2/applications/${this.application_id}/reject`
+      const url = `/applications/${this.application_id}/reject`
 
       this.axios
         .post(url)
@@ -259,7 +259,7 @@ export default {
     delete_application() {
       const confirm_message = this.$t("Delete this application form")
       if (!confirm(confirm_message)) return
-      const url = `/v2/applications/${this.application_id}`
+      const url = `/applications/${this.application_id}`
       this.axios
         .delete(url)
         .then(() => {

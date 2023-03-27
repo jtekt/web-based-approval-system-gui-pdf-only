@@ -50,6 +50,17 @@
 import AppTemplate from "@moreillon/vue_application_template_vuetify"
 import LocaleSelector from "./components/LocaleSelector.vue"
 
+const {
+  NODE_ENV,
+  VUE_APP_LOGIN_URL,
+  VUE_APP_IDENTIFICATION_URL,
+  VUE_APP_PASSWORD_RESET_URL,
+  VUE_APP_EMPLOYEE_MANAGER_FRONT_URL,
+  VUE_APP_HOMEPAGE_URL,
+  VUE_APP_HELP_PAGE_URL,
+  VUE_APP_LOGIN_HINT,
+} = process.env
+
 export default {
   name: "App",
 
@@ -62,22 +73,23 @@ export default {
     return {
       template_options: {
         title: "電子捺印システム",
-        skip_greetings: process.env.NODE_ENV === "development",
+        skip_greetings: NODE_ENV === "development",
 
-        login_url: process.env.VUE_APP_LOGIN_URL,
-        identification_url: process.env.VUE_APP_IDENTIFICATION_URL,
-        password_reset_url: process.env.VUE_APP_PASSWORD_RESET_URL,
+        login_url: VUE_APP_LOGIN_URL,
+        identification_url: VUE_APP_IDENTIFICATION_URL,
+        password_reset_url: VUE_APP_PASSWORD_RESET_URL,
 
-        profile_url: `${process.env.VUE_APP_EMPLOYEE_MANAGER_FRONT_URL}/employees/self`,
+        profile_url: `${VUE_APP_EMPLOYEE_MANAGER_FRONT_URL}/employees/self`,
 
-        homepage_url: process.env.VUE_APP_HOMEPAGE_URL,
+        homepage_url: VUE_APP_HOMEPAGE_URL,
+        login_hint: VUE_APP_LOGIN_HINT,
 
         header_logo: require("@/assets/jtekt_logo_negative.jpg"),
         authentication_logo: require("@/assets/jtekt_logo.jpg"),
         colors: { app_bar: "#000" },
         author: "Maxime Moreillon - JTEKT Corporation",
       },
-      help_page_url: process.env.VUE_APP_HELP_PAGE_URL,
+      help_page_url: VUE_APP_HELP_PAGE_URL,
     }
   },
   methods: {

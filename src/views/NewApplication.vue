@@ -202,7 +202,7 @@ export default {
       }
 
       this.axios
-        .post(`/v2/applications`, body)
+        .post(`/applications`, body)
         .then(({ data }) => {
           this.$store.commit("require_email", true)
           const application_id = this.get_id_of_item(data)
@@ -221,7 +221,7 @@ export default {
       let formData = new FormData()
       formData.append("file_to_upload", file)
       this.axios
-        .post(`/v2/files`, formData, {
+        .post(`/files`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         })
         .then(({ data }) => {
@@ -248,7 +248,7 @@ export default {
 
       const application_id = this.$route.query.copy_of
       this.axios
-        .get(`/v2/applications/${application_id}`)
+        .get(`/applications/${application_id}`)
         .then(({ data: original_application }) => {
           const {
             title,
