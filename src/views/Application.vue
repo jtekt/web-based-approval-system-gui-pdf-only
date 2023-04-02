@@ -172,6 +172,7 @@
 <script>
 import HelpDialog from "@/components/application/HelpDialog.vue"
 import IdUtils from "@/mixins/IdUtils.js"
+import dateUtils from "@/mixins/dateUtils.js"
 
 import WebHankoContainer from "@/components/application/web_hanko/WebHankoContainer.vue"
 import EmailButton from "@/components/application/EmailButton.vue"
@@ -188,7 +189,7 @@ export default {
     EmailButton,
     HelpDialog,
   },
-  mixins: [IdUtils],
+  mixins: [IdUtils, dateUtils],
   data() {
     return {
       help_dialog: false,
@@ -269,9 +270,6 @@ export default {
           if (error.response) console.error(error.response.data)
           else console.error(error)
         })
-    },
-    format_date_neo4j(date) {
-      return `${date.year}/${date.month}/${date.day}`
     },
   },
   computed: {
