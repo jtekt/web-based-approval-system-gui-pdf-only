@@ -72,10 +72,10 @@ export default {
             headers: [
               { text: this.$t("Date"), value: "creation_date" },
               { text: this.$t("Title"), value: "title" },
-              { text: "%", value: "progress" },
+              { text: "%", value: "progress", width: "10ch" },
               {
                 text: this.$t("Current recipient"),
-                value: "current_recipient.display_name",
+                value: "current_recipient",
               },
             ],
           },
@@ -85,7 +85,7 @@ export default {
             headers: [
               { text: this.$t("Date"), value: "creation_date" },
               { text: this.$t("Title"), value: "title" },
-              { text: "%", value: "progress" },
+              { text: "%", value: "progress", width: "10ch" },
               {
                 text: this.$t("Current recipient"),
                 value: "current_recipient.display_name",
@@ -108,7 +108,7 @@ export default {
             headers: [
               { text: this.$t("Date"), value: "creation_date" },
               { text: this.$t("Title"), value: "title" },
-              { text: this.$t("Applicant"), value: "applicant.display_name" },
+              { text: this.$t("Applicant"), value: "applicant" },
             ],
           },
           {
@@ -117,7 +117,7 @@ export default {
             headers: [
               { text: this.$t("Date"), value: "creation_date" },
               { text: this.$t("Title"), value: "title" },
-              { text: this.$t("Applicant"), value: "applicant.display_name" },
+              { text: this.$t("Applicant"), value: "applicant" },
             ],
           },
           {
@@ -126,7 +126,7 @@ export default {
             headers: [
               { text: this.$t("Date"), value: "creation_date" },
               { text: this.$t("Title"), value: "title" },
-              { text: this.$t("Applicant"), value: "applicant.display_name" },
+              { text: this.$t("Applicant"), value: "applicant" },
             ],
           },
         ],
