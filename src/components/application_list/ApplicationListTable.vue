@@ -38,7 +38,6 @@ export default {
   name: "ApplicationListTable",
   props: {
     direction: String,
-    state: String,
     title: String,
     headers: {
       type: Array,
@@ -91,7 +90,7 @@ export default {
         batch_size: itemsPerPage,
         type: this.type,
         relationship: this.relationship_lookup[this.direction],
-        state: this.state,
+        state: this.$route.query.state || "pending",
       }
 
       this.axios
