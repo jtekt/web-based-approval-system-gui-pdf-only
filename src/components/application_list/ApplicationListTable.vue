@@ -21,7 +21,11 @@
     </template>
 
     <template v-slot:item.current_recipient="{ item }">
-      <UserChip :user="item.current_recipient" :link="false" />
+      <UserChip
+        :user="item.current_recipient"
+        :link="false"
+        v-if="item.current_recipient"
+      />
     </template>
 
     <template v-slot:item.applicant="{ item }">
@@ -76,6 +80,9 @@ export default {
     direction() {
       this.get_applications()
     },
+    state() {
+      this.get_applications()
+    },
   },
   methods: {
     get_applications() {
@@ -125,6 +132,11 @@ export default {
     row_clicked(application) {
       const application_id = this.get_id_of_item(application)
       this.$router.push({ name: "application", params: { application_id } })
+    },
+  },
+  computed: {
+    state() {
+      return this.$route.query.state
     },
   },
 }
