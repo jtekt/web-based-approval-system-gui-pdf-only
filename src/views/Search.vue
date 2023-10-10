@@ -81,6 +81,7 @@
         :options.sync="options"
         :server-items-length="count"
         @click:row="row_clicked($event)"
+        :footer-props="footerProps"
       >
         <template v-slot:item.creation_date="{ item }">
           {{ format_date(item.creation_date) }}
@@ -129,6 +130,7 @@ export default {
       selected_group: null,
 
       modal_open: false,
+      footerProps: { "items-per-page-options": [10, 50, 100] },
     }
   },
   mounted() {
