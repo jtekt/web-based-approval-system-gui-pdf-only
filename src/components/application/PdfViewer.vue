@@ -129,6 +129,7 @@ import { PDFDocument } from "pdf-lib"
 import pdf from "vue-pdf"
 import canvg from "canvg" // used to turn Hankos into PNG so as to include them in the pdf
 import IdUtils from "@/mixins/IdUtils.js"
+import { generateWebHankoSvg } from "@/utils/webHankos.js"
 
 export default {
   name: "PdfViewer",
@@ -190,30 +191,7 @@ export default {
     previous_page() {
       if (this.page_number > 0) this.page_number--
     },
-    get_file_name(file_id) {
-      // Only used when downloading file
-      const url = `/applications/${this.application_id}/files/${file_id}/filename`
-
-      this.axios
-        .get(url)
-        .then(({ data }) => {
-          this.filename = data.filename
-        })
-        .catch((error) => {
-          if (error.response) console.error(error.response.data)
-          else console.error(error)
-        })
-    },
     view_pdf(file_id) {
-      // Check if IE
-      if (!!window.MSInputMethodContext && !!document.documentMode) {
-        this.load_error = "Internet Explorer is to old for this feature"
-        alert(
-          "Internet Explorerのユーザーはこの機能に値しません、今の時代のブラウザを使ってください。"
-        )
-        return
-      }
-
       this.loading = true
 
       // reset the file
@@ -230,8 +208,10 @@ export default {
 
       this.axios
         .get(file_url, axios_options)
-        .then(({ data }) => {
-          this.get_file_name(file_id)
+        .then(({ data, headers }) => {
+          const contentDisposition = headers["content-disposition"]
+          if (contentDisposition)
+            this.filename = contentDisposition.split("=")[1]
           this.load_pdf(data)
         })
         .catch((error) => {
@@ -266,7 +246,7 @@ export default {
         this.load_pdf_hankos()
       } catch (error) {
         console.error(error)
-        this.load_error = `このファイルは申請マネージャのPDFリーダーで開けません<br>This file cannot be opened with the PDF reader of Shinsei-manager`
+        this.load_error = `このファイルは申請マネージャのPDFリーダーで開けません<br>This file cannot be opened with the PDF reader`
       }
     },
 
@@ -382,11 +362,8 @@ export default {
       this.new_hanko.style = { visibility: "none" }
     },
 
-    get_hanko_blob_url_from_id(hanko_dom_id) {
-      const hanko_svg = document.getElementById(hanko_dom_id)
-
-      const serializer = new XMLSerializer()
-      const SVG_sata = serializer.serializeToString(hanko_svg)
+    get_hanko_blob_url(recipient) {
+      const SVG_data = generateWebHankoSvg(recipient)
 
       const canvas = document.createElement("canvas")
       const context = canvas.getContext("2d")
@@ -394,7 +371,7 @@ export default {
       canvas.width = 1000
       canvas.height = 1500
 
-      canvg.fromString(context, SVG_sata).start()
+      canvg.fromString(context, SVG_data).start()
 
       return canvas.toDataURL("image/png")
     },
@@ -405,56 +382,56 @@ export default {
 
       const promises = this.application.recipients
         .filter((recipient) => !!recipient.approval)
-        .map((recipient) => recipient.approval)
-        .map((approval) => {
-          return new Promise((resolve, reject) => {
-            // Do nothing if there no hanko to draw for the current approval
-            let hankos = approval.attachment_hankos
-            if (!hankos) return resolve()
+        .map(
+          (recipient) =>
+            new Promise((resolve, reject) => {
+              const { approval } = recipient
+              // Do nothing if there no hanko to draw for the current approval
+              let hankos = approval.attachment_hankos
+              if (!hankos) return resolve()
 
-            if (typeof hankos === "string") hankos = JSON.parse(hankos)
+              if (typeof hankos === "string") hankos = JSON.parse(hankos)
 
-            const approval_id = this.get_id_of_item(approval)
-            const hanko_id = `hanko_${approval_id}`
-            const png_url = this.get_hanko_blob_url_from_id(hanko_id)
+              const png_url = this.get_hanko_blob_url(recipient)
 
-            const axios_options = { responseType: "arraybuffer", baseURL: null }
+              const axios_options = {
+                responseType: "arraybuffer",
+                baseURL: null,
+              }
 
-            this.axios
-              .get(png_url, axios_options)
-              .then(({ data }) => this.pdfDoc.embedPng(data))
-              .then((pngImage) => {
-                // The PNG is now awvailable to display at every hanko location
+              this.axios
+                .get(png_url, axios_options)
+                .then(({ data }) => this.pdfDoc.embedPng(data))
+                .then((pngImage) => {
+                  const pages = this.pdfDoc.getPages()
 
-                const pages = this.pdfDoc.getPages()
+                  hankos.forEach((hanko) => {
+                    // Skip if hanko is not part of the current file
+                    if (hanko.file_id !== this.file_id) return resolve()
 
-                hankos.forEach((hanko) => {
-                  // Skip if hanko is not part of the current file
-                  if (hanko.file_id !== this.file_id) return resolve()
+                    const page = pages[hanko.page_number]
 
-                  const page = pages[hanko.page_number]
+                    // Currently, some hankos have no scale set so allow the scale to be modified using the slider in that case
+                    const pngDims = pngImage.scale(
+                      hanko.scale || this.hanko_scale
+                    )
 
-                  // Currently, some hankos have no scale set so allow the scale to be modified using the slider in that case
-                  const pngDims = pngImage.scale(
-                    hanko.scale || this.hanko_scale
-                  )
+                    const drawing_parameters = {
+                      x: hanko.position.x - 0.5 * pngDims.width,
+                      y: hanko.position.y - 0.5 * pngDims.height,
+                      width: pngDims.width,
+                      height: pngDims.height,
+                    }
 
-                  const drawing_parameters = {
-                    x: hanko.position.x - 0.5 * pngDims.width,
-                    y: hanko.position.y - 0.5 * pngDims.height,
-                    width: pngDims.width,
-                    height: pngDims.height,
-                  }
+                    // This seems to be a synchronous function
+                    page.drawImage(pngImage, drawing_parameters)
+                  })
 
-                  // This seems to be a synchronous function
-                  page.drawImage(pngImage, drawing_parameters)
+                  resolve()
                 })
-
-                resolve()
-              })
-              .catch(reject)
-          })
-        })
+                .catch(reject)
+            })
+        )
 
       // render .pdf once all hankos of all approvals have been drawn
       Promise.all(promises)

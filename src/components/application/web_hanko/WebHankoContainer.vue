@@ -7,12 +7,7 @@
 
     <div class="hanko_area">
       <!-- TODO: provide alternatives for the name! -->
-      <WebHanko
-        v-if="recipient.approval"
-        :name="recipient_displayed_name"
-        :approvalId="get_id_of_item(recipient.approval)"
-        :date="recipient.approval.date"
-      />
+      <WebHanko v-if="recipient.approval" :recipient="recipient" />
 
       <v-icon color="#c00000" x-large v-else-if="recipient.refusal"
         >mdi-close-circle</v-icon
