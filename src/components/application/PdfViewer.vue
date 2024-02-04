@@ -210,8 +210,10 @@ export default {
         .get(file_url, axios_options)
         .then(({ data, headers }) => {
           const contentDisposition = headers["content-disposition"]
-          if (contentDisposition)
-            this.filename = contentDisposition.split("=")[1]
+          if (contentDisposition) {
+            // TODO: use UTF if available
+            this.filename = contentDisposition.split("=")[1].split(";")[0]
+          }
           this.load_pdf(data)
         })
         .catch((error) => {
