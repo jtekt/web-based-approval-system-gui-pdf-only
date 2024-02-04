@@ -211,8 +211,8 @@ export default {
         .then(({ data, headers }) => {
           const contentDisposition = headers["content-disposition"]
           if (contentDisposition) {
-            // TODO: use UTF if available
-            this.filename = contentDisposition.split("=")[1].split(";")[0]
+            const rawFilename = contentDisposition.split("=")[1].split(";")[0]
+            if (rawFilename) this.filename = decodeURI(rawFilename)
           }
           this.load_pdf(data)
         })
