@@ -11,8 +11,6 @@ export const generateWebHankoSvg = (recipient) => {
     approval,
   } = recipient
 
-  console.log(recipient)
-
   const { _id, date } = approval
 
   const lastName =
