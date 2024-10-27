@@ -106,6 +106,12 @@
                 </v-card>
               </v-dialog>
             </v-col>
+            <v-col cols="auto">
+              <v-btn outlined @click="saveRecipients">
+                <v-icon left>mdi-content-save</v-icon>
+                <span>Save</span>
+              </v-btn>
+            </v-col>
           </v-row>
         </v-toolbar>
 
@@ -148,6 +154,7 @@ import UserPicker from "@moreillon/vue_user_picker"
 import NewApplicationApprovalFlow from "@/components/new_application/NewApplicationApprovalFlow.vue"
 import FileUpload from "@/components/new_application/FileUpload.vue"
 import IdUtils from "@/mixins/IdUtils.js"
+import { localStorageRecipientsKey } from "@/constants"
 
 export default {
   name: "NewApplication",
@@ -159,7 +166,7 @@ export default {
         { type: "pdf", label: "file", value: null },
         { type: "text", label: "memo", value: "" },
       ],
-      recipients: [],
+      recipients: this.getRecipientsFromLocalStorage(),
       add_recipient_dialog: false,
       file_uploading: false,
       submitting: false,
@@ -177,8 +184,8 @@ export default {
   watch: {
     copy_of() {
       if (!this.$route.query.copy_of) {
-        this.recipients = []
         this.title = ""
+        this.recipients = this.getRecipientsFromLocalStorage()
         this.form_data = [
           { type: "pdf", label: "file", value: null },
           { type: "text", label: "memo", value: "" },
@@ -270,6 +277,18 @@ export default {
         .catch((error) => {
           console.error(error)
         })
+    },
+    saveRecipients() {
+      localStorage.setItem(
+        localStorageRecipientsKey,
+        JSON.stringify(this.recipients)
+      )
+      alert("承認フローが保存されました")
+    },
+    getRecipientsFromLocalStorage() {
+      const localStorageItem = localStorage.getItem(localStorageRecipientsKey)
+      if (!localStorageItem) return []
+      return JSON.parse(localStorageItem)
     },
   },
   computed: {
