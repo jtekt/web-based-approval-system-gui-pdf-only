@@ -99,7 +99,11 @@
                 }}</v-list-item-subtitle>
                 <v-list-item-title
                   class="application_field_value"
-                  v-html="linkifyHtml(application.form_data[1].value || '-')"
+                  v-html="
+                    sanitizeHtml(
+                      linkifyHtml(application.form_data[1].value || '-')
+                    )
+                  "
                 >
                 </v-list-item-title>
               </v-list-item-content>
@@ -177,6 +181,7 @@ import IdUtils from "@/mixins/IdUtils.js";
 import dateUtils from "@/mixins/dateUtils.js";
 import linkifyHtml from "linkify-html";
 //import * as linkify from "linkifyjs";
+import * as sanitizeHtml from "sanitize-html";
 
 import WebHankoContainer from "@/components/application/web_hanko/WebHankoContainer.vue";
 import EmailButton from "@/components/application/EmailButton.vue";
@@ -276,6 +281,7 @@ export default {
         });
     },
     linkifyHtml,
+    sanitizeHtml,
   },
   computed: {
     application_id() {
