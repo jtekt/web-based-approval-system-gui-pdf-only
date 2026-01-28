@@ -23,6 +23,10 @@ spec:
           env:
             - name: VUE_APP_HELP_PAGE_URL
               value: http://rdmc.jtekt.local:30081/denshi-natsuin/
+            - name: VUE_APP_OIDC_AUTHORITY
+              value: http://10.115.1.100:30416/realms/jtekt
+            - name: VUE_APP_OIDC_CLIENT_ID
+              value: public
 ---
 apiVersion: v1
 kind: Service
