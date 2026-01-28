@@ -79,10 +79,8 @@
                   </v-card-title>
 
                   <v-card-text>
-                    <UserPicker
-                      class="user_picker"
-                      v-on:selection="add_to_recipients($event)"
-                    />
+                    <UserPicker class="user_picker" v-on:selection="add_to_recipients($event)"
+                      :accessToken="access_token" />
                   </v-card-text>
 
                   <v-card-text v-if="recipients.length">
@@ -301,6 +299,9 @@ export default {
     },
     copy_of() {
       return this.$route.query.copy_of
+    },
+    access_token() {
+      return this.$store.state.tokens?.access_token
     },
   },
 }

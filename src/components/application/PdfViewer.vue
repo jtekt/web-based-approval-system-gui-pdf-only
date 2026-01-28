@@ -501,12 +501,15 @@ export default {
     },
     current_recipient_is_current_user() {
       if (!this.current_recipient) return false
-      const current_recipient_id = this.get_id_of_item(this.current_recipient)
-      return current_recipient_id === this.current_user_id
+
+      return this.users_match(
+        this.current_recipient,
+        this.$store.state.current_user
+      )
     },
     current_user_as_recipient() {
-      return this.application.recipients.find(
-        (recipient) => this.get_id_of_item(recipient) === this.current_user_id
+      return this.application.recipients.find(recipient =>
+        this.users_match(recipient, this.$store.state.current_user)
       )
     },
 
