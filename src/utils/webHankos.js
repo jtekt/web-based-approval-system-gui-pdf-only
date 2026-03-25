@@ -1,23 +1,14 @@
-import QRCode from "qrcode-svg"
+import QRCode from "qrcode-svg";
 
 export const generateWebHankoSvg = (recipient) => {
-  const {
-    first_name,
-    first_name_kanji,
-    last_name,
-    last_name_kanji,
-    family_name,
-    family_name_kanji,
-    approval,
-  } = recipient
+  const { last_name, display_name, approval } = recipient;
 
-  const { _id, date } = approval
+  const { _id, date } = approval;
 
-  const lastName =
-    last_name || last_name_kanji || family_name || family_name_kanji
-  const firstName = first_name || first_name_kanji
-  const fullName = `${lastName} ${firstName}`
-  const approverDisplayedName = fullName.length <= 6 ? fullName : lastName
+  const approverDisplayedName =
+    display_name && display_name.length <= 6
+      ? display_name
+      : last_name || display_name;
 
   const qr = new QRCode({
     content: _id,
@@ -30,10 +21,10 @@ export const generateWebHankoSvg = (recipient) => {
     color: "#c00000",
     ecl: "M",
     pretty: false,
-  })
+  });
 
-  const { day, month, year } = date
-  const formattedDate = `${year}.${month}.${day}`
+  const { day, month, year } = date;
+  const formattedDate = `${year}.${month}.${day}`;
 
   return `<svg viewBox="0 0 100 150">
     <!-- frame -->
@@ -76,5 +67,5 @@ export const generateWebHankoSvg = (recipient) => {
     </text>
 
   </svg>
-  `
-}
+  `;
+};
